@@ -16,14 +16,8 @@ use Sepia\PoParser\SourceHandler\FileSystem;
 
 class WriteTest extends AbstractFixtureTestCase
 {
-    protected function setUp(): void
-    {
-        $this->markTestSkipped("Faker is abandoned");
-    }
-
     public function testWrite(): void
     {
-        $faker = Factory::create();
         $catalogSource = new CatalogArray();
 
         // Normal Entry
@@ -46,7 +40,7 @@ class WriteTest extends AbstractFixtureTestCase
         // Obsolete entry
         $entry = EntryFactory::createFromArray([
             'msgid' => 'obsolete.1',
-            'msgstr' => $faker->paragraph(5),
+            'msgstr' => 'Test string',
             'msgctxt' => 'obsolete.context',
             'obsolete' => true,
         ]);
@@ -216,10 +210,9 @@ class WriteTest extends AbstractFixtureTestCase
         // Create a po-file with all the test-values as msgid and a fake translation as msgstr
         // And test if the entry could be fetched and the translation equals the msgstr.
 
-        $faker = Factory::create();
         $catalogSource = new CatalogArray();
 
-        $translation = $faker->paragraph(5);
+        $translation = 'Test string';
 
         $entry = EntryFactory::createFromArray([
             'msgid' => $value,
