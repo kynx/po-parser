@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sepia\Test\UnitTest;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Sepia\PoParser\Catalog\Catalog;
 use Sepia\PoParser\Catalog\Header;
@@ -12,7 +13,7 @@ use Sepia\PoParser\SourceHandler\StringSource;
 
 class ParserTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function should_parse_headers(): void
     {
         $doc =

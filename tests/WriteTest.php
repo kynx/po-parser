@@ -6,6 +6,7 @@ namespace Sepia\Test;
 
 use Exception;
 use Faker\Factory;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ReflectionClass;
 use ReflectionException;
 use Sepia\PoParser\Catalog\Catalog;
@@ -180,9 +181,7 @@ class WriteTest extends AbstractFixtureTestCase
         ];
     }
 
-    /**
-     * @dataProvider wrappingDataProvider
-     */
+    #[DataProvider('wrappingDataProvider')]
     public function testWrapping(string $value, int $wrappingColumn, array $assert): void
     {
 

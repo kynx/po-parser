@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Sepia\Test\UnitTest;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Sepia\PoParser\Catalog\CatalogArray;
 use Sepia\PoParser\PoCompiler;
@@ -11,7 +13,7 @@ use Sepia\Test\EntryBuilder;
 
 class PoCompilerTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function should_compile_single_line_translation(): void
     {
         $catalog = new CatalogArray([
@@ -58,7 +60,7 @@ class PoCompilerTest extends TestCase
             , $output);
     }
 
-    /** @test */
+    #[Test]
     public function should_compile_obsolete_translation(): void
     {
         $catalog = new CatalogArray([
@@ -81,7 +83,7 @@ class PoCompilerTest extends TestCase
             , $output);
     }
 
-    /** @test */
+    #[Test]
     public function should_compile_multiple_line_translation(): void
     {
         $catalog = new CatalogArray([
@@ -103,7 +105,7 @@ class PoCompilerTest extends TestCase
             , $output);
     }
 
-    /** @test */
+    #[Test]
     public function should_compile_translation_with_plurals(): void
     {
         $catalog = new CatalogArray([
@@ -132,7 +134,7 @@ class PoCompilerTest extends TestCase
             , $output);
     }
 
-    /** @test */
+    #[Test]
     public function should_compile_obsolete_plurals(): void
     {
         $catalog = new CatalogArray([
@@ -162,7 +164,7 @@ class PoCompilerTest extends TestCase
             , $output);
     }
 
-    /** @test */
+    #[Test]
     public function should_compile_escaping_special_chars(): void
     {
         $catalog = new CatalogArray([
@@ -197,10 +199,8 @@ msgstr "proper\nlinebreaks"
 ', $output);
     }
 
-    /**
-     * @test
-     * @dataProvider wrappingDataProvider
-     */
+    #[Test]
+    #[DataProvider('wrappingDataProvider')]
     public function should_compile_translation_with_wrapping_long_lines(string $value, int $wrappingColumn, bool $shouldWrapLines, array $assert): void
     {
         // Make sure that encoding is set to UTF-8 for this test
