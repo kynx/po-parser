@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sepia\PoParser;
 
 use Sepia\PoParser\Catalog\Catalog;
@@ -98,7 +100,7 @@ class Parser
         $headersFound = false;
 
         while (!$this->sourceHandler->ended()) {
-            $line = \trim($this->sourceHandler->getNextLine());
+            $line = \trim((string) $this->sourceHandler->getNextLine());
 
             if ($this->shouldIgnoreLine($line, $entry)) {
                 $this->lineNumber++;

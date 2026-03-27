@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sepia\Test\UnitTest;
 
 use PHPUnit\Framework\TestCase;

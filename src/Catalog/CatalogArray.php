@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sepia\PoParser\Catalog;
 
 class CatalogArray implements Catalog
@@ -12,7 +14,7 @@ class CatalogArray implements Catalog
     {
         $this->headers = new Header();
         $this->entries = [];
-        
+
         foreach ($entries as $entry) {
             $this->addEntry($entry);
         }
