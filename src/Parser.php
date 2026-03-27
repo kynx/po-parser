@@ -47,24 +47,18 @@ use Sepia\PoParser\SourceHandler\StringSource;
  */
 class Parser
 {
-    /** @var SourceHandler */
-    protected $sourceHandler;
+    protected SourceHandler $sourceHandler;
 
-    /** @var int */
-    protected $lineNumber;
+    protected int $lineNumber;
 
-    /** @var string */
-    protected $property;
+    protected ?string $property;
 
     /**
      * Reads and parses a string
      *
-     * @param string $string po content
-     *
-     * @throws \Exception.
-     * @return Catalog
+     * @throws \Exception
      */
-    public static function parseString($string)
+    public static function parseString(string $string): Catalog
     {
         $parser = new Parser(new StringSource($string));
 
@@ -74,12 +68,9 @@ class Parser
     /**
      * Reads and parses a file
      *
-     * @param string $filePath
-     *
-     * @throws \Exception.
-     * @return Catalog
+     * @throws \Exception
      */
-    public static function parseFile($filePath)
+    public static function parseFile(string $filePath): Catalog
     {
         $parser = new Parser(new FileSystem($filePath));
 
@@ -95,13 +86,12 @@ class Parser
      * Reads and parses strings of a .po file.
      *
      * @throws \Exception, \InvalidArgumentException, ParseException
-     * @return Catalog
      */
-    public function parse(?Catalog $catalog = null)
+    public function parse(?Catalog $catalog = null): Catalog
     {
         $catalog = $catalog === null ? new CatalogArray() : $catalog;
         $this->lineNumber = 0;
-        $entry = array();
+        $entry = [];
         $this->property = null; // current property
 
         // Flags
@@ -125,7 +115,7 @@ class Parser
                     $catalog->addEntry(EntryFactory::createFromArray($entry));
                 }
 
-                $entry = array();
+                $entry = [];
                 $this->property = null;
 
                 if (empty($line)) {
@@ -156,13 +146,9 @@ class Parser
     }
 
     /**
-     * @param string $line
-     * @param array  $entry
-     *
-     * @return array
      * @throws ParseException
      */
-    protected function parseLine($line, $entry)
+    protected function parseLine(string $line, array $entry): array
     {
         $firstChar = \strlen($line) > 0 ? $line[0] : '';
 
@@ -184,13 +170,9 @@ class Parser
     }
 
     /**
-     * @param string $line
-     * @param array  $entry
-     *
-     * @return array
      * @throws ParseException
      */
-    protected function parseProperty($line, array $entry)
+    protected function parseProperty(string $line, array $entry): array
     {
         list($key, $value) = $this->getProperty($line);
 
@@ -220,13 +202,9 @@ class Parser
     }
 
     /**
-     * @param string $line
-     * @param array  $entry
-     *
-     * @return array
      * @throws ParseException
      */
-    protected function parseMultiline($line, $entry)
+    protected function parseMultiline(string $line, array $entry): array
     {
         switch (true) {
             case $this->property === 'msgctxt':
@@ -247,13 +225,9 @@ class Parser
     }
 
     /**
-     * @param string $line
-     * @param array  $entry
-     *
-     * @return array
      * @throws ParseException
      */
-    protected function parseComment($line, $entry)
+    protected function parseComment(string $line, array $entry): array
     {
         $comment = \trim(\substr($line, 0, 2));
 
@@ -264,7 +238,7 @@ class Parser
                 break;
 
             case '#.':
-                $entry['ccomment'] = !isset($entry['ccomment']) ? array() : $entry['ccomment'];
+                $entry['ccomment'] = !isset($entry['ccomment']) ? [] : $entry['ccomment'];
                 $entry['ccomment'][] = \trim(\substr($line, 2));
                 break;
 
@@ -272,17 +246,17 @@ class Parser
             case '#|':  // Previous string
             case '#~':  // Old entry
             case '#~|': // Previous string old
-                $mode = array(
+                $mode = [
                     '#|' => 'previous',
                     '#~' => 'obsolete',
                     '#~|' => 'previous-obsolete'
-                );
+                ];
 
                 $line = \trim(\substr($line, 2));
                 $property = $mode[$comment];
                 if ($property === 'previous') {
                     if (!isset($entry[$property])) {
-                        $subEntry = array();
+                        $subEntry = [];
                     } else {
                         $subEntry = $entry[$property];
                     }
@@ -303,7 +277,7 @@ class Parser
 
             case '#':
             default:
-                $entry['tcomment'] = !isset($entry['tcomment']) ? array() : $entry['tcomment'];
+                $entry['tcomment'] = !isset($entry['tcomment']) ? [] : $entry['tcomment'];
                 $entry['tcomment'][] = \trim(\substr($line, 1));
                 break;
         }
@@ -311,36 +285,19 @@ class Parser
         return $entry;
     }
 
-    /**
-     * @param string $msgstr
-     *
-     * @return Header
-     */
-    protected function parseHeaders($msgstr)
+    protected function parseHeaders(string $msgstr): Header
     {
         $headers = \array_filter(\explode("\n", $msgstr));
 
         return new Header($headers);
     }
 
-    /**
-     * @param string $line
-     * @param array  $entry
-     *
-     * @return bool
-     */
-    protected function shouldIgnoreLine($line, array $entry)
+    protected function shouldIgnoreLine(string $line, array $entry): bool
     {
         return empty($line) && \count($entry) === 0;
     }
 
-    /**
-     * @param string $line
-     * @param array  $entry
-     *
-     * @return bool
-     */
-    protected function shouldCloseEntry($line, array $entry)
+    protected function shouldCloseEntry(string $line, array $entry): bool
     {
         $tokens = $this->getProperty($line);
         $property = $tokens[0];
@@ -348,23 +305,15 @@ class Parser
         return ($line === '' || ($property === 'msgid' && isset($entry['msgid'])));
     }
 
-    /**
-     * @param string $value
-     * @return string
-     */
-    protected function unquote($value)
+    protected function unquote(string $value): string
     {
         return \stripcslashes(\preg_replace('/^\"|\"$/', '', $value));
     }
 
     /**
      * Checks if entry is a header by
-     *
-     * @param array $entry
-     *
-     * @return bool
      */
-    protected function isHeader(array $entry)
+    protected function isHeader(array $entry): bool
     {
         if (empty($entry) || !isset($entry['msgstr'])) {
             return false;
@@ -374,7 +323,7 @@ class Parser
             return false;
         }
 
-        $standardHeaders = array(
+        $standardHeaders = [
             'Project-Id-Version:',
             'Report-Msgid-Bugs-To:',
             'POT-Creation-Date:',
@@ -385,7 +334,7 @@ class Parser
             'Content-Type:',
             'Content-Transfer-Encoding:',
             'Plural-Forms:',
-        );
+        ];
 
         $headers = \explode("\n", $entry['msgstr']);
         // Remove text after double colon
@@ -414,12 +363,7 @@ class Parser
         return \count($customHeaders) > 0;
     }
 
-    /**
-     * @param string $line
-     *
-     * @return array
-     */
-    protected function getProperty($line)
+    protected function getProperty(string $line): array
     {
         $tokens = \preg_split('/\s+/ ', $line, 2);
 

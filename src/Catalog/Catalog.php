@@ -4,36 +4,20 @@ namespace Sepia\PoParser\Catalog;
 
 interface Catalog
 {
-    public function addEntry(Entry $entry);
+    public function addEntry(Entry $entry): void;
 
-    public function addHeaders(Header $headers);
+    public function addHeaders(Header $headers): void;
 
-    /**
-     * @param string      $msgid
-     * @param string|null $msgctxt
-     */
-    public function removeEntry($msgid, $msgctxt = null);
+    public function removeEntry(string $msgid, ?string $msgctxt = null): void;
 
-    /**
-     * @return array
-     */
-    public function getHeaders();
+    public function getHeaders(): array;
 
-    /**
-     * @return Header
-     */
-    public function getHeader();
+    public function getHeader(): Header;
 
     /**
      * @return Entry[]
      */
-    public function getEntries();
+    public function getEntries(): array;
 
-    /**
-     * @param string      $msgId
-     * @param string|null $context
-     *
-     * @return Entry|null
-     */
-    public function getEntry($msgId, $context = null);
+    public function getEntry(string $msgId, ?string $context = null): ?Entry;
 }

@@ -35,17 +35,17 @@ class EntryBuilder
         return $entry;
     }
 
-    private $msgId;
-    private $msgPluralId;
-    private $msgStr;
-    private $context;
-    private $reference;
-    private $translatorComments;
-    private $developerComments;
-    private $flags;
-    private $previousEntry;
-    private $obsolete;
-    private $pluralTranslations;
+    private string $msgId;
+    private ?string $msgPluralId;
+    private ?string $msgStr;
+    private ?string $context;
+    private array $reference;
+    private array $translatorComments;
+    private array $developerComments;
+    private array $flags;
+    private ?Entry $previousEntry;
+    private bool $obsolete;
+    private array $pluralTranslations;
 
     public function __construct()
     {

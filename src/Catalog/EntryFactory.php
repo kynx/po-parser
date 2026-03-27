@@ -4,17 +4,13 @@ namespace Sepia\PoParser\Catalog;
 
 class EntryFactory
 {
-    /**
-     * @param array $entryArray
-     * @return Entry
-     */
-    public static function createFromArray(array $entryArray)
+    public static function createFromArray(array $entryArray): Entry
     {
         $entry = new Entry(
             $entryArray['msgid'],
             isset($entryArray['msgstr']) ? $entryArray['msgstr'] : null
         );
-        $plurals = array();
+        $plurals = [];
 
         foreach ($entryArray as $key => $value) {
             switch (true) {

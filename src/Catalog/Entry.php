@@ -4,278 +4,176 @@ namespace Sepia\PoParser\Catalog;
 
 class Entry
 {
-    /** @var string */
-    protected $msgId;
+    protected string $msgId;
 
-    /** @var string|null */
-    protected $msgStr;
+    protected ?string $msgStr;
 
-    /** @var string|null */
-    protected $msgIdPlural;
+    protected ?string $msgIdPlural;
 
-    /** @var string[] */
-    protected $msgStrPlurals;
+    protected array $msgStrPlurals;
 
-    /** @var string|null */
-    protected $msgCtxt;
+    protected ?string $msgCtxt;
 
-    /** @var Entry|null */
-    protected $previousEntry;
+    protected ?Entry $previousEntry;
 
-    /** @var bool|null */
-    protected $obsolete;
+    protected ?bool $obsolete;
 
-    /** @var array */
-    protected $flags;
+    protected array $flags;
 
-    /** @var array */
-    protected $translatorComments;
+    protected array $translatorComments;
 
-    /** @var array */
-    protected $developerComments;
+    protected array $developerComments;
 
-    /** @var array */
-    protected $reference;
+    protected array $reference;
 
-    /**
-     * @param string $msgId
-     * @param string|null $msgStr
-     */
-    public function __construct($msgId, $msgStr = null)
+    public function __construct(string $msgId, ?string $msgStr = null)
     {
         $this->msgId = $msgId;
         $this->msgStr = $msgStr;
-        $this->msgStrPlurals = array();
-        $this->flags = array();
-        $this->translatorComments = array();
-        $this->developerComments = array();
-        $this->reference = array();
+        $this->msgIdPlural = null;
+        $this->msgStrPlurals = [];
+        $this->msgCtxt = null;
+        $this->previousEntry = null;
+        $this->obsolete = null;
+        $this->flags = [];
+        $this->translatorComments = [];
+        $this->developerComments = [];
+        $this->reference = [];
     }
 
-    /**
-     * @param string $msgId
-     *
-     * @return Entry
-     */
-    public function setMsgId($msgId)
+    public function setMsgId(string $msgId): self
     {
         $this->msgId = $msgId;
 
         return $this;
     }
 
-    /**
-     * @param string|null $msgStr
-     *
-     * @return Entry
-     */
-    public function setMsgStr($msgStr)
+    public function setMsgStr(?string $msgStr): self
     {
         $this->msgStr = $msgStr;
 
         return $this;
     }
 
-    /**
-     * @param string|null $msgIdPlural
-     *
-     * @return Entry
-     */
-    public function setMsgIdPlural($msgIdPlural)
+    public function setMsgIdPlural(?string $msgIdPlural): self
     {
         $this->msgIdPlural = $msgIdPlural;
 
         return $this;
     }
 
-    /**
-     * @param string|null $msgCtxt
-     *
-     * @return Entry
-     */
-    public function setMsgCtxt($msgCtxt)
+    public function setMsgCtxt(?string $msgCtxt): self
     {
         $this->msgCtxt = $msgCtxt;
 
         return $this;
     }
 
-    /**
-     * @param null|Entry $previousEntry
-     *
-     * @return Entry
-     */
-    public function setPreviousEntry($previousEntry)
+    public function setPreviousEntry(?Entry $previousEntry): self
     {
         $this->previousEntry = $previousEntry;
 
         return $this;
     }
 
-    /**
-     * @param bool|null $obsolete
-     *
-     * @return Entry
-     */
-    public function setObsolete($obsolete)
+    public function setObsolete(?bool $obsolete): self
     {
         $this->obsolete = $obsolete;
 
         return $this;
     }
 
-    /**
-     * @param array $flags
-     *
-     * @return Entry
-     */
-    public function setFlags($flags)
+    public function setFlags(array $flags): self
     {
         $this->flags = $flags;
 
         return $this;
     }
 
-    /**
-     * @param array $translatorComments
-     *
-     * @return Entry
-     */
-    public function setTranslatorComments($translatorComments)
+    public function setTranslatorComments(array $translatorComments): self
     {
         $this->translatorComments = $translatorComments;
 
         return $this;
     }
 
-    /**
-     * @param array $developerComments
-     *
-     * @return Entry
-     */
-    public function setDeveloperComments($developerComments)
+    public function setDeveloperComments(array $developerComments): self
     {
         $this->developerComments = $developerComments;
 
         return $this;
     }
 
-    /**
-     * @param array $reference
-     *
-     * @return Entry
-     */
-    public function setReference($reference)
+    public function setReference(array $reference): self
     {
         $this->reference = $reference;
 
         return $this;
     }
 
-    /**
-     * @param string[] $msgStrPlurals
-     *
-     * @return Entry
-     */
-    public function setMsgStrPlurals($msgStrPlurals)
+    public function setMsgStrPlurals(array $msgStrPlurals): self
     {
         $this->msgStrPlurals = $msgStrPlurals;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getMsgId()
+    public function getMsgId(): string
     {
         return $this->msgId;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getMsgStr()
+    public function getMsgStr(): ?string
     {
         return $this->msgStr;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getMsgIdPlural()
+    public function getMsgIdPlural(): ?string
     {
         return $this->msgIdPlural;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getMsgCtxt()
+    public function getMsgCtxt(): ?string
     {
         return $this->msgCtxt;
     }
 
-    /**
-     * @return null|Entry
-     */
-    public function getPreviousEntry()
+    public function getPreviousEntry(): ?Entry
     {
         return $this->previousEntry;
     }
 
-    /**
-     * @return bool
-     */
-    public function isObsolete()
+    public function isObsolete(): bool
     {
         return $this->obsolete === true;
     }
 
-    /**
-     * @return bool
-     */
-    public function isFuzzy()
+    public function isFuzzy(): bool
     {
         return \in_array('fuzzy', $this->getFlags(), true);
     }
 
-    /**
-     * @return bool
-     */
-    public function isPlural()
+    public function isPlural(): bool
     {
         return $this->getMsgIdPlural() !== null || \count($this->getMsgStrPlurals()) > 0;
     }
 
-    /**
-     * @return array
-     */
-    public function getFlags()
+    public function getFlags(): array
     {
         return $this->flags;
     }
 
-    /**
-     * @return array
-     */
-    public function getTranslatorComments()
+    public function getTranslatorComments(): array
     {
         return $this->translatorComments;
     }
 
-    /**
-     * @return array
-     */
-    public function getDeveloperComments()
+    public function getDeveloperComments(): array
     {
         return $this->developerComments;
     }
 
-    /**
-     * @return array
-     */
-    public function getReference()
+    public function getReference(): array
     {
         return $this->reference;
     }
@@ -283,7 +181,7 @@ class Entry
     /**
      * @return string[]
      */
-    public function getMsgStrPlurals()
+    public function getMsgStrPlurals(): array
     {
         return $this->msgStrPlurals;
     }

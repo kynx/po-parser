@@ -4,28 +4,21 @@ namespace Sepia\PoParser\Catalog;
 
 class CatalogArray implements Catalog
 {
-    /** @var Header */
-    protected $headers;
+    /** @var array<string, Entry> */
+    protected array $entries;
+    protected Header $headers;
 
-    /** @var array */
-    protected $entries;
-
-    /**
-     * @param Entry[] $entries
-     */
-    public function __construct(array $entries = array())
+    public function __construct(array $entries = [])
     {
-        $this->entries = array();
         $this->headers = new Header();
+        $this->entries = [];
+        
         foreach ($entries as $entry) {
             $this->addEntry($entry);
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function addEntry(Entry $entry)
+    public function addEntry(Entry $entry): void
     {
         $key = $this->getEntryHash(
             $entry->getMsgId(),
@@ -34,18 +27,12 @@ class CatalogArray implements Catalog
         $this->entries[$key] = $entry;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function addHeaders(Header $headers)
+    public function addHeaders(Header $headers): void
     {
         $this->headers = $headers;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function removeEntry($msgid, $msgctxt = null)
+    public function removeEntry(string $msgid, ?string $msgctxt = null): void
     {
         $key = $this->getEntryHash($msgid, $msgctxt);
         if (isset($this->entries[$key])) {
@@ -53,34 +40,22 @@ class CatalogArray implements Catalog
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->headers->asArray();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getHeader()
+    public function getHeader(): Header
     {
         return $this->headers;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getEntries()
+    public function getEntries(): array
     {
         return $this->entries;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getEntry($msgId, $context = null)
+    public function getEntry(string $msgId, ?string $context = null): ?Entry
     {
         $key = $this->getEntryHash($msgId, $context);
         if (!isset($this->entries[$key])) {
@@ -90,13 +65,7 @@ class CatalogArray implements Catalog
         return $this->entries[$key];
     }
 
-    /**
-     * @param string      $msgId
-     * @param string|null $context
-     *
-     * @return string
-     */
-    private function getEntryHash($msgId, $context = null)
+    private function getEntryHash(string $msgId, ?string $context = null): string
     {
         return \md5($msgId.$context);
     }

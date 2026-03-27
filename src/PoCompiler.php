@@ -8,25 +8,18 @@ use Sepia\PoParser\Catalog\Header;
 
 class PoCompiler
 {
-    /** @var string */
-    const TOKEN_OBSOLETE = '#~ ';
+    private const string TOKEN_OBSOLETE = '#~ ';
 
-    /** @var int */
-    protected $wrappingColumn;
+    protected int $wrappingColumn;
 
-    /** @var string */
-    protected $lineEnding;
+    protected string $lineEnding;
 
-    /** @var string */
-    protected $tokenCarriageReturn;
+    protected string $tokenCarriageReturn;
 
     /**
      * PoCompiler constructor.
-     *
-     * @param int    $wrappingColumn
-     * @param string $lineEnding
      */
-    public function __construct($wrappingColumn = 80, $lineEnding = "\n")
+    public function __construct(int $wrappingColumn = 80, string $lineEnding = "\n")
     {
         $this->wrappingColumn = $wrappingColumn;
         $this->lineEnding = $lineEnding;
@@ -36,13 +29,10 @@ class PoCompiler
     /**
      * Compiles entries into a string
      *
-     * @param Catalog $catalog
-     *
-     * @return string
      * @throws \Exception
      * @todo Write obsolete messages at the end of the file.
      */
-    public function compile(Catalog $catalog)
+    public function compile(Catalog $catalog): string
     {
         $output = '';
 
@@ -88,20 +78,12 @@ class PoCompiler
         return $output;
     }
 
-    /**
-     * @return string
-     */
-    protected function eol()
+    protected function eol(): string
     {
         return $this->lineEnding;
     }
 
-    /**
-     * @param $entry
-     *
-     * @return string
-     */
-    protected function buildPreviousEntry(Entry $entry)
+    protected function buildPreviousEntry(Entry $entry): string
     {
         $previous = $entry->getPreviousEntry();
         if ($previous === null) {
@@ -111,12 +93,7 @@ class PoCompiler
         return '#| msgid '.$this->cleanExport($previous->getMsgId()).$this->eol();
     }
 
-    /**
-     * @param $entry
-     *
-     * @return string
-     */
-    protected function buildTranslatorComment(Entry $entry)
+    protected function buildTranslatorComment(Entry $entry): string
     {
         if ($entry->getTranslatorComments() === null) {
             return '';
@@ -130,7 +107,7 @@ class PoCompiler
         return $output;
     }
 
-    protected function buildDeveloperComment(Entry $entry)
+    protected function buildDeveloperComment(Entry $entry): string
     {
         if ($entry->getDeveloperComments() === null) {
             return '';
@@ -144,7 +121,7 @@ class PoCompiler
         return $output;
     }
 
-    protected function buildReference(Entry $entry)
+    protected function buildReference(Entry $entry): string
     {
         $reference = $entry->getReference();
         if ($reference === null || \count($reference) === 0) {
@@ -159,7 +136,7 @@ class PoCompiler
         return $output;
     }
 
-    protected function buildFlags(Entry $entry)
+    protected function buildFlags(Entry $entry): string
     {
         $flags = $entry->getFlags();
         if ($flags === null || \count($flags) === 0) {
@@ -169,7 +146,7 @@ class PoCompiler
         return '#, '.\implode(', ', $flags).$this->eol();
     }
 
-    protected function buildContext(Entry $entry)
+    protected function buildContext(Entry $entry): string
     {
         if ($entry->getMsgCtxt() === null) {
             return '';
@@ -180,7 +157,7 @@ class PoCompiler
             'msgctxt '.$this->cleanExport($entry->getMsgCtxt()).$this->eol();
     }
 
-    protected function buildMsgId(Entry $entry)
+    protected function buildMsgId(Entry $entry): string
     {
         if ($entry->getMsgId() === null) {
             return '';
@@ -189,7 +166,7 @@ class PoCompiler
         return $this->buildProperty('msgid', $entry->getMsgId(), $entry->isObsolete());
     }
 
-    protected function buildMsgStr(Entry $entry, Header $headers)
+    protected function buildMsgStr(Entry $entry, Header $headers): string
     {
         $value = $entry->getMsgStr();
         $plurals = $entry->getMsgStrPlurals();
@@ -214,12 +191,7 @@ class PoCompiler
         return $this->buildProperty('msgstr', $value, $entry->isObsolete());
     }
 
-    /**
-     * @param Entry $entry
-     *
-     * @return string
-     */
-    protected function buildMsgIdPlural(Entry $entry)
+    protected function buildMsgIdPlural(Entry $entry): string
     {
         $value = $entry->getMsgIdPlural();
         if ($value === null) {
@@ -229,7 +201,7 @@ class PoCompiler
         return $this->buildProperty('msgid_plural', $value, $entry->isObsolete());
     }
 
-    protected function buildProperty($property, $value, $obsolete = false)
+    protected function buildProperty(string $property, string $value, $obsolete = false): string
     {
         $tokens = $this->wrapString($value);
 
@@ -249,12 +221,8 @@ class PoCompiler
 
     /**
      * Prepares a string to be outputed into a file.
-     *
-     * @param string $string The string to be converted.
-     *
-     * @return string
      */
-    protected function cleanExport($string)
+    protected function cleanExport(string $string): string
     {
         /**
          * Replace newline character with $this->tokenCarriageReturn that is later replaced back and thus
@@ -269,18 +237,14 @@ class PoCompiler
         return str_replace($this->tokenCarriageReturn, '\n', $string);
     }
 
-    /**
-     * @param string $value
-     * @return array
-     */
-    private function wrapString($value)
+    private function wrapString(string $value): array
     {
         $length = mb_strlen($value);
         if ($length <= $this->wrappingColumn) {
-            return array($value);
+            return [$value];
         }
 
-        $lines = array();
+        $lines = [];
         $parts = preg_split('/( )/', $value, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
         $lineIndex = 0;
         foreach ($parts as $part) {

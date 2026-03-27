@@ -3,11 +3,11 @@
 namespace Sepia\Test\UnitTest;
 
 use Sepia\PoParser\Catalog\Entry;
-use Sepia\Test\AbstractFixtureTest;
+use Sepia\Test\AbstractFixtureTestCase;
 
-class ReadPoTest extends AbstractFixtureTest
+class ReadPoTest extends AbstractFixtureTestCase
 {
-    public function testBasic()
+    public function testBasic(): void
     {
         $catalog = $this->parseFile('basic.po');
 
@@ -23,7 +23,7 @@ class ReadPoTest extends AbstractFixtureTest
         $this->assertEquals('translation "quoted"', $entry->getMsgStr());
     }
 
-    public function testBasicMultiline()
+    public function testBasicMultiline(): void
     {
         $catalog = $this->parseFile('basicMultiline.po');
 
@@ -34,7 +34,7 @@ class ReadPoTest extends AbstractFixtureTest
         $this->assertEquals('translation line 1 translation line 2', $entry->getMsgStr());
     }
 
-    public function testBasicCollection()
+    public function testBasicCollection(): void
     {
         $catalog = $this->parseFile('basicCollection.po');
 
@@ -51,7 +51,7 @@ class ReadPoTest extends AbstractFixtureTest
         $this->assertEquals('translation.2', $entry->getMsgStr());
     }
 
-    public function testEntriesWithContext()
+    public function testEntriesWithContext(): void
     {
         $catalog = $this->parseFile('context.po');
 
@@ -65,7 +65,7 @@ class ReadPoTest extends AbstractFixtureTest
         $this->assertNotEquals($withContext, $withoutContext);
     }
 
-    public function testPlurals()
+    public function testPlurals(): void
     {
         $catalog = $this->parseFile('plurals.po');
 
@@ -73,15 +73,15 @@ class ReadPoTest extends AbstractFixtureTest
         $this->assertNotNull($entry);
         $this->assertNotEmpty($entry->getMsgStrPlurals());
         $this->assertEquals(
-            array(
+            [
                 '%s entrada no actualizada, alguien la está editando.',
                 '%s entradas no actualizadas, alguien las está editando.',
-            ),
+            ],
             $entry->getMsgStrPlurals()
         );
     }
 
-    public function testPluralsMultiline()
+    public function testPluralsMultiline(): void
     {
         $catalog = $this->parseFile('pluralsMultiline.po');
         $entry = $catalog->getEntry('%s post not updated,somebody is editing it.');
@@ -89,15 +89,15 @@ class ReadPoTest extends AbstractFixtureTest
         $this->assertNotNull($entry);
         $this->assertNotEmpty($entry->getMsgStrPlurals());
         $this->assertEquals(
-            array(
+            [
                 '%s entrada no actualizada,alguien la está editando.',
                 '%s entradas no actualizadas,alguien las está editando.',
-            ),
+            ],
             $entry->getMsgStrPlurals()
         );
     }
 
-    public function testEmptyPlurals()
+    public function testEmptyPlurals(): void
     {
         $catalog = $this->parseFile('plurals.po');
 
@@ -107,7 +107,7 @@ class ReadPoTest extends AbstractFixtureTest
         $this->assertEmpty($entry->getMsgStrPlurals());
     }
 
-    public function testFlags()
+    public function testFlags(): void
     {
         $catalog = $this->parseFile('multiflags.po');
 
@@ -116,40 +116,40 @@ class ReadPoTest extends AbstractFixtureTest
 
         $this->assertNotNull($entry);
         $this->assertCount(2, $entry->getFlags());
-        $this->assertEquals(array('php-format', 'fuzzy'), $entry->getFlags());
+        $this->assertEquals(['php-format', 'fuzzy'], $entry->getFlags());
     }
 
-    public function testTranslatorComment()
+    public function testTranslatorComment(): void
     {
         $catalog = $this->parseFile('translatorComments.po');
         $entry = $catalog->getEntry('string.1');
 
         $this->assertNotNull($entry);
         $this->assertEquals(
-            array('translator comment', 'second translator comment'),
+            ['translator comment', 'second translator comment'],
             $entry->getTranslatorComments()
         );
     }
 
-    public function testDeveloperComment()
+    public function testDeveloperComment(): void
     {
         $catalog = $this->parseFile('codeComments.po');
         $entry = $catalog->getEntry('string.1');
 
         $this->assertNotNull($entry);
-        $this->assertEquals(array('code comment', 'code translator comment'), $entry->getDeveloperComments());
+        $this->assertEquals(['code comment', 'code translator comment'], $entry->getDeveloperComments());
     }
 
-    public function testReferences()
+    public function testReferences(): void
     {
         $catalog = $this->parseFile('basicReference.po');
 
         $entry = $catalog->getEntry('string.1');
         $this->assertNotNull($entry);
-        $this->assertEquals(array('src/views/forms.php:44'), $entry->getReference());
+        $this->assertEquals(['src/views/forms.php:44'], $entry->getReference());
     }
 
-    public function testPreviousString()
+    public function testPreviousString(): void
     {
         $catalog = $this->parseFile('previousString.po');
 
@@ -163,7 +163,7 @@ class ReadPoTest extends AbstractFixtureTest
         );
     }
 
-    public function testPreviousStringMultiline()
+    public function testPreviousStringMultiline(): void
     {
         $catalog = $this->parseFile('previousStringMultiline.po');
 
@@ -176,41 +176,41 @@ class ReadPoTest extends AbstractFixtureTest
         $this->assertEquals('Doloribus nulla odit et aut est. Rerum molestiae pariatur suscipit unde in quidem alias alias. Ut ea omnis placeat rerum quae asperiores. Et recusandae praesentium ea.', $previous->getMsgStr());
     }
 
-    public function testHeaders()
+    public function testHeaders(): void
     {
         $catalog = $this->parseFile('basicHeader.po');
         $this->assertCount(1, $catalog->getEntries());
     }
 
-    public function testOnlyCustomHeaders()
+    public function testOnlyCustomHeaders(): void
     {
         $catalog = $this->parseFile('basicCustomHeaders.po');
         $this->assertCount(1, $catalog->getEntries());
         $this->assertGreaterThanOrEqual(1, \count($catalog->getHeaders()));
     }
 
-    public function testHeadersMultiline()
+    public function testHeadersMultiline(): void
     {
         $catalog = $this->parseFile('basicHeadersMultiline.po');
         $this->assertCount(1, $catalog->getEntries());
         $this->assertCount(3,$catalog->getHeaders());
     }
 
-    public function testFileWithOnlyHeaders()
+    public function testFileWithOnlyHeaders(): void
     {
         $catalog = $this->parseFile('basicOnlyHeader.po');
         $this->assertCount(0, $catalog->getEntries());
         $this->assertGreaterThanOrEqual(1, \count($catalog->getHeaders()));
     }
 
-    public function testNoBlankLinesSeparatingEntries()
+    public function testNoBlankLinesSeparatingEntries(): void
     {
         $catalog = $this->parseFile('noblankline.po');
 
         $this->assertCount(2, $catalog->getEntries());
     }
 
-    public function testProperQuotesEscaping()
+    public function testProperQuotesEscaping(): void
     {
         $catalog = $this->parseFile('quotes.po');
 

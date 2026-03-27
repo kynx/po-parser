@@ -34,8 +34,8 @@ namespace Sepia\PoParser\SourceHandler;
  */
 interface SourceHandler
 {
-    public function getNextLine();
-    public function ended();
-    public function close();
-    public function save($poString);
+    public function getNextLine(): false|string;
+    public function ended(): bool;
+    public function close(): bool;
+    public function save(string $poString): true;
 }
