@@ -114,7 +114,7 @@ class EntryBuilder
         return $this;
     }
 
-    public function withFlags(array $flags)
+    public function withFlags(array $flags): self
     {
         $this->flags = $flags;
         return $this;

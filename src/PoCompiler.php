@@ -203,7 +203,7 @@ class PoCompiler
         return $this->buildProperty('msgid_plural', $value, $entry->isObsolete());
     }
 
-    protected function buildProperty(string $property, string $value, $obsolete = false): string
+    protected function buildProperty(string $property, string $value, bool $obsolete = false): string
     {
         $tokens = $this->wrapString($value);
 

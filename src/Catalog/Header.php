@@ -54,7 +54,7 @@ class Header
         $header = \array_values(\array_filter(
             $this->headers,
             function ($string) use ($headerName) {
-                return \preg_match('/'.$headerName.':(.*)/i', $string) == 1;
+                return \preg_match('/' . $headerName . ':(.*)/i', $string) === 1;
             }
         ));
 
