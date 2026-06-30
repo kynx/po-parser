@@ -94,12 +94,10 @@ class Parser
     /**
      * Reads and parses strings of a .po file.
      *
-     * @param SourceHandler . Optional
-     *
      * @throws \Exception, \InvalidArgumentException, ParseException
      * @return Catalog
      */
-    public function parse(Catalog $catalog = null)
+    public function parse(?Catalog $catalog = null)
     {
         $catalog = $catalog === null ? new CatalogArray() : $catalog;
         $this->lineNumber = 0;
