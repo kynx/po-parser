@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sepia\PoParser\SourceHandler;
 
 /**
@@ -35,22 +37,20 @@ namespace Sepia\PoParser\SourceHandler;
 class StringSource implements SourceHandler
 {
     /** @var string[] */
-    protected $strings;
+    protected array $strings;
 
-    /** @var int */
-    protected $line;
+    protected int $line;
 
-    /** @var int */
-    protected $total;
+    protected int $total;
 
-    public function __construct($string)
+    public function __construct(string $string)
     {
         $this->line = 0;
         $this->strings = \explode("\n",$string);
         $this->total = \count($this->strings);
     }
 
-    public function getNextLine()
+    public function getNextLine(): false|string
     {
         if (isset($this->strings[$this->line])) {
             $result = $this->strings[$this->line];
@@ -61,17 +61,19 @@ class StringSource implements SourceHandler
         return $result;
     }
 
-    public function ended()
+    public function ended(): bool
     {
         return ($this->line>=$this->total);
     }
 
-    public function close()
+    public function close(): bool
     {
         $this->line = 0;
+        return true;
     }
 
-    public function save($ignore)
+    public function save(string $poString): true
     {
+        return true;
     }
 }

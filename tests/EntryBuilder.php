@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sepia\Test;
 
 use Sepia\PoParser\Catalog\Entry;
@@ -35,17 +37,17 @@ class EntryBuilder
         return $entry;
     }
 
-    private $msgId;
-    private $msgPluralId;
-    private $msgStr;
-    private $context;
-    private $reference;
-    private $translatorComments;
-    private $developerComments;
-    private $flags;
-    private $previousEntry;
-    private $obsolete;
-    private $pluralTranslations;
+    private string $msgId;
+    private ?string $msgPluralId;
+    private ?string $msgStr;
+    private ?string $context;
+    private array $reference;
+    private array $translatorComments;
+    private array $developerComments;
+    private array $flags;
+    private ?Entry $previousEntry;
+    private bool $obsolete;
+    private array $pluralTranslations;
 
     public function __construct()
     {
@@ -112,7 +114,7 @@ class EntryBuilder
         return $this;
     }
 
-    public function withFlags(array $flags)
+    public function withFlags(array $flags): self
     {
         $this->flags = $flags;
         return $this;

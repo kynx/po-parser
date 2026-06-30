@@ -56,8 +56,8 @@ $entry = new Entry('welcome.user', 'Welcome User!');
 $catalog->setEntry($entry);
 
 // You can also modify other entry attributes as translator comments, code comments, flags...
-$entry->setTranslatorComments(array('This is shown whenever a new user registers in the website'));
-$entry->setFlags(array('fuzzy', 'php-code'));
+$entry->setTranslatorComments(['This is shown whenever a new user registers in the website']);
+$entry->setFlags(['fuzzy', 'php-code']);
 ```
 
 ## Save Changes back to a file

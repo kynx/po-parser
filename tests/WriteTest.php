@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sepia\Test;
 
 use Exception;
 use Faker\Factory;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ReflectionClass;
 use ReflectionException;
 use Sepia\PoParser\Catalog\Catalog;
@@ -12,37 +15,36 @@ use Sepia\PoParser\Catalog\EntryFactory;
 use Sepia\PoParser\PoCompiler;
 use Sepia\PoParser\SourceHandler\FileSystem;
 
-class WriteTest extends AbstractFixtureTest
+class WriteTest extends AbstractFixtureTestCase
 {
-    public function testWrite()
+    public function testWrite(): void
     {
-        $faker = Factory::create();
         $catalogSource = new CatalogArray();
 
         // Normal Entry
-        $entry = EntryFactory::createFromArray(array(
+        $entry = EntryFactory::createFromArray([
             'msgid' => 'string.1',
             'msgstr' => 'translation.1',
             'msgctxt' => 'context.1',
-            'reference' => array('src/views/forms.php:44'),
-            'tcomment' => array('translator comment'),
-            'ccomment' => array('code comment'),
-            'flags' => array('1', '2', '3')
-        ));
-        $previousEntry = EntryFactory::createFromArray(array(
+            'reference' => ['src/views/forms.php:44'],
+            'tcomment' => ['translator comment'],
+            'ccomment' => ['code comment'],
+            'flags' => ['1', '2', '3'],
+        ]);
+        $previousEntry = EntryFactory::createFromArray([
            'msgid' => 'previous.string.1',
-           'msgctxt' => 'previous.context.1'
-        ));
+           'msgctxt' => 'previous.context.1',
+        ]);
         $entry->setPreviousEntry($previousEntry);
         $catalogSource->addEntry($entry);
 
         // Obsolete entry
-        $entry = EntryFactory::createFromArray(array(
+        $entry = EntryFactory::createFromArray([
             'msgid' => 'obsolete.1',
-            'msgstr' => $faker->paragraph(5),
+            'msgstr' => 'Test string',
             'msgctxt' => 'obsolete.context',
-            'obsolete' => true
-        ));
+            'obsolete' => true,
+        ]);
         $catalogSource->addEntry($entry);
 
         try {
@@ -55,21 +57,21 @@ class WriteTest extends AbstractFixtureTest
         $this->assertPoFile($catalogSource, $catalog);
     }
 
-    public function testWritePlurals()
+    public function testWritePlurals(): void
     {
         $catalogSource = new CatalogArray();
         // Normal Entry
-        $entry = EntryFactory::createFromArray(array(
+        $entry = EntryFactory::createFromArray([
             'msgid' => 'string.1',
             'msgstr' => 'translation.1',
             'msgstr[0]' => 'translation.plural.0',
             'msgstr[1]' => 'translation.plural.1',
             'msgstr[2]' => 'translation.plural.2',
-            'reference' => array('src/views/forms.php:44'),
-            'tcomment' => array('translator comment'),
-            'ccomment' => array('code comment'),
-            'flags' => array('1', '2', '3')
-        ));
+            'reference' => ['src/views/forms.php:44'],
+            'tcomment' => ['translator comment'],
+            'ccomment' => ['code comment'],
+            'flags' => ['1', '2', '3'],
+        ]);
 
         $catalogSource->addEntry($entry);
 
@@ -83,27 +85,27 @@ class WriteTest extends AbstractFixtureTest
         $this->assertCount(3, $entry->getMsgStrPlurals());
     }
 
-    public function testDoubleEscaped()
+    public function testDoubleEscaped(): void
     {
         $catalogSource = new CatalogArray();
         // Normal Entry
-        $entry = EntryFactory::createFromArray(array(
+        $entry = EntryFactory::createFromArray([
             'msgid' => 'a\"b\"c',
-            'msgstr' => 'quotes'
-        ));
+            'msgstr' => 'quotes',
+        ]);
         $catalogSource->addEntry($entry);
 
-        $entry = EntryFactory::createFromArray(array(
+        $entry = EntryFactory::createFromArray([
             'msgid' => 'a\nb\nc',
-            'msgstr' => 'slashes'
-        ));
+            'msgstr' => 'slashes',
+        ]);
         $catalogSource->addEntry($entry);
 
         // Entry with line breaks
-        $entry = EntryFactory::createFromArray(array(
+        $entry = EntryFactory::createFromArray([
             'msgid' => "a\nb\nc",
-            'msgstr' => "proper\nlinebreaks"
-        ));
+            'msgstr' => "proper\nlinebreaks",
+        ]);
         $catalogSource->addEntry($entry);
 
         try {
@@ -119,74 +121,68 @@ class WriteTest extends AbstractFixtureTest
         $this->assertNotNull($catalog->getEntry("a\nb\nc"));
     }
 
-    public function wrappingDataProvider()
+    public static function wrappingDataProvider(): array
     {
-        return array(
-            'Multibyte Wrap (char 81)' => array(
+        return [
+            'Multibyte Wrap (char 81)' => [
                 'value' => 'Hello everybody, Hello ladies and gentlemen.... this is a multibyte translation á with a multibyte beginning at char 81.',
                 'wrappingColumn' => 80,
-                'assert' => array(
+                'assert' => [
                     'Hello everybody, Hello ladies and gentlemen.... this is a multibyte translation ',
-                    'á with a multibyte beginning at char 81.'
-                ),
-            ),
-            'Multibyte Wrap (char 80)' => array(
+                    'á with a multibyte beginning at char 81.',
+                ],
+            ],
+            'Multibyte Wrap (char 80)' => [
                 'value' => 'Hello everybody, Hello ladies and gentlemen... this is a multibyte translation á with a multibyte beginning at char 80.',
                 'wrappingColumn' => 80,
-                'assert' => array(
+                'assert' => [
                     'Hello everybody, Hello ladies and gentlemen... this is a multibyte translation á',
-                    ' with a multibyte beginning at char 80.'
-                ),
-            ),
-            'Multibyte Wrap (char 79)' => array(
+                    ' with a multibyte beginning at char 80.',
+                ],
+            ],
+            'Multibyte Wrap (char 79)' => [
                 'value' => 'Hello everybody, Hello ladies and gentlemen.. this is a multibyte translation á with multibytes beginning at char 79.',
                 'wrappingColumn' => 80,
-                'assert' => array(
+                'assert' => [
                     'Hello everybody, Hello ladies and gentlemen.. this is a multibyte translation á ',
-                    'with multibytes beginning at char 79.'
-                ),
-            ),
-            'Escape-Sequence Wrap (char 80+81)' => array(
+                    'with multibytes beginning at char 79.',
+                ],
+            ],
+            'Escape-Sequence Wrap (char 80+81)' => [
                 'value' => 'Hello everybody, Hello ladies and gentlemen..... this is a line with more than \"eighty\" chars. And char 80+81 is an escaped double quote.',
                 'wrappingColumn' => 80,
-                'assert' => array(
+                'assert' => [
                     'Hello everybody, Hello ladies and gentlemen..... this is a line with more than ',
-                    '\"eighty\" chars. And char 80+81 is an escaped double quote.'
-                ),
-            ),
-            'Escape-Sequence Wrap (char 79+80)' => array(
+                    '\"eighty\" chars. And char 80+81 is an escaped double quote.',
+                ],
+            ],
+            'Escape-Sequence Wrap (char 79+80)' => [
                 'value' => 'Hello everybody, Hello ladies and gentlemen.... this is a line with more than \"eighty\" chars. And char 79+80 is an escaped double quote.',
                 'wrappingColumn' => 80,
-                'assert' => array(
+                'assert' => [
                     'Hello everybody, Hello ladies and gentlemen.... this is a line with more than ',
-                    '\"eighty\" chars. And char 79+80 is an escaped double quote.'
-                ),
-            ),
-            'Escaped Line-break' => array(
+                    '\"eighty\" chars. And char 79+80 is an escaped double quote.',
+                ],
+            ],
+            'Escaped Line-break' => [
                 'value' => 'Hello everybody, \\nHello ladies and gentlemen.',
                 'wrappingColumn' => 80,
-                'assert' => array(
-                    'Hello everybody, \\nHello ladies and gentlemen.'
-                ),
-            ),
-            'String with a lot of multibyte characters should not break when wrappingColumn is at its mb_strlen' => array(
+                'assert' => [
+                    'Hello everybody, \\nHello ladies and gentlemen.',
+                ],
+            ],
+            'String with a lot of multibyte characters should not break when wrappingColumn is at its mb_strlen' => [
                 'value' => 'kategóriáját kötelező',
                 'wrappingColumn' => 21,
-                'assert' => array(
-                    'kategóriáját kötelező'
-                ),
-            ),
-        );
+                'assert' => [
+                    'kategóriáját kötelező',
+                ],
+            ],
+        ];
     }
 
-    /**
-     * @dataProvider wrappingDataProvider
-     *
-     * @param string $value
-     * @param int $wrappingColumn
-     * @param array $assert
-     */
-    public function testWrapping($value, $wrappingColumn, array $assert)
+    #[DataProvider('wrappingDataProvider')]
+    public function testWrapping(string $value, int $wrappingColumn, array $assert): void
     {
 
         // Make sure that encoding is set to UTF-8 for this test
@@ -206,22 +202,21 @@ class WriteTest extends AbstractFixtureTest
         }
 
         // Test the private method
-        $res = $method->invokeArgs($compiler, array($value));
+        $res = $method->invokeArgs($compiler, [$value]);
         $this->assertEquals($assert, $res);
 
 
         // Create a po-file with all the test-values as msgid and a fake translation as msgstr
         // And test if the entry could be fetched and the translation equals the msgstr.
 
-        $faker = Factory::create();
         $catalogSource = new CatalogArray();
 
-        $translation = $faker->paragraph(5);
+        $translation = 'Test string';
 
-        $entry = EntryFactory::createFromArray(array(
+        $entry = EntryFactory::createFromArray([
             'msgid' => $value,
-            'msgstr' => $translation
-        ));
+            'msgstr' => $translation,
+        ]);
 
         $catalogSource->addEntry($entry);
         try {
@@ -242,25 +237,25 @@ class WriteTest extends AbstractFixtureTest
     }
 
 
-    public function testWriteObsoletePlural()
+    public function testWriteObsoletePlural(): void
     {
 
         $catalogSource = new CatalogArray();
 
         // Obsolete entry
-        $entry = EntryFactory::createFromArray(array(
+        $entry = EntryFactory::createFromArray([
             'msgid' => '%d obsolete string',
             'msgid_plural' => '%d obsolete strings',
             'msgstr' => 'translation.2',
             'msgstr[0]' => 'translation.plural.0',
             'msgstr[1]' => 'translation.plural.1',
             'msgstr[2]' => 'translation.plural.2',
-            'reference' => array('src/views/forms.php:45'),
-            'tcomment' => array('translator comment'),
-            'ccomment' => array('code comment'),
-            'flags' => array('fuzzy'),
-            'obsolete' => true
-        ));
+            'reference' => ['src/views/forms.php:45'],
+            'tcomment' => ['translator comment'],
+            'ccomment' => ['code comment'],
+            'flags' => ['fuzzy'],
+            'obsolete' => true,
+        ]);
 
         $catalogSource->addEntry($entry);
 
@@ -287,18 +282,16 @@ class WriteTest extends AbstractFixtureTest
     }
 
     /**
-     * @param Catalog $catalog
-     * @param int $wrappingColumn
      * @throws Exception
      */
-    protected function saveCatalog(Catalog $catalog, $wrappingColumn = 80)
+    protected function saveCatalog(Catalog $catalog, int $wrappingColumn = 80): void
     {
         $fileHandler = new FileSystem($this->resourcesPath.'temp.po');
         $compiler = new PoCompiler($wrappingColumn);
         $fileHandler->save($compiler->compile($catalog));
     }
 
-    private function assertPoFile(CatalogArray $catalogSource, Catalog $catalogNew)
+    private function assertPoFile(CatalogArray $catalogSource, Catalog $catalogNew): void
     {
         foreach ($catalogSource->getEntries() as $entry) {
             $entryWritten = $catalogNew->getEntry($entry->getMsgId(), $entry->getMsgCtxt());
@@ -322,7 +315,7 @@ class WriteTest extends AbstractFixtureTest
         }
     }
 
-    public function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sepia\PoParser\SourceHandler;
 
 /**
@@ -34,13 +36,12 @@ namespace Sepia\PoParser\SourceHandler;
  */
 class FileSystem implements SourceHandler
 {
-    /** @var resource */
+    /** @var ?resource */
     protected $fileHandle;
 
-    /** @var string */
-    protected $filePath;
+    protected string $filePath;
 
-    public function __construct($filePath)
+    public function __construct(string $filePath)
     {
         $this->filePath = $filePath;
         $this->fileHandle = null;
@@ -49,7 +50,7 @@ class FileSystem implements SourceHandler
     /**
      * @throws \Exception
      */
-    protected function openFile()
+    protected function openFile(): void
     {
         if ($this->fileHandle !== null) {
             return;
@@ -70,10 +71,9 @@ class FileSystem implements SourceHandler
     }
 
     /**
-     * @return bool|string
      * @throws \Exception
      */
-    public function getNextLine()
+    public function getNextLine(): false|string
     {
         $this->openFile();
 
@@ -81,17 +81,16 @@ class FileSystem implements SourceHandler
     }
 
     /**
-     * @return bool
      * @throws \Exception
      */
-    public function ended()
+    public function ended(): bool
     {
         $this->openFile();
 
         return \feof($this->fileHandle);
     }
 
-    public function close()
+    public function close(): bool
     {
         if ($this->fileHandle === null) {
             return true;
@@ -101,15 +100,11 @@ class FileSystem implements SourceHandler
     }
 
     /**
-     * @param $output
-     * @param $filePath
-     *
-     * @return bool
      * @throws \Exception
      */
-    public function save($output)
+    public function save(string $poString): true
     {
-        $result = \file_put_contents($this->filePath, $output);
+        $result = \file_put_contents($this->filePath, $poString);
         if ($result === false) {
             throw new \Exception('Could not write into file '.\htmlspecialchars($this->filePath));
         }

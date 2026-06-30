@@ -1,21 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sepia\PoParser\Catalog;
 
 class Header
 {
-    /** @var array */
-    protected $headers;
+    protected array $headers;
 
-    /** @var int|null */
-    protected $nPlurals;
+    protected ?int $nPlurals;
 
-    public function __construct(array $headers = array())
+    public function __construct(array $headers = [])
     {
         $this->setHeaders($headers);
+        $this->nPlurals = null;
     }
 
-    public function getPluralFormsCount()
+    public function getPluralFormsCount(): int
     {
         if ($this->nPlurals !== null) {
             return $this->nPlurals;
@@ -27,7 +28,7 @@ class Header
             return $this->nPlurals;
         }
 
-        $matches = array();
+        $matches = [];
         if (\preg_match('/nplurals=([0-9]+)/', $header, $matches) !== 1) {
             $this->nPlurals = 0;
             return $this->nPlurals;
@@ -38,30 +39,22 @@ class Header
         return $this->nPlurals;
     }
 
-    public function setHeaders(array $headers)
+    public function setHeaders(array $headers): void
     {
         $this->headers = $headers;
     }
 
-    /**
-     * @return array
-     */
-    public function asArray()
+    public function asArray(): array
     {
         return $this->headers;
     }
 
-    /**
-     * @param string $headerName
-     *
-     * @return string|null
-     */
-    protected function getHeaderValue($headerName)
+    protected function getHeaderValue(string $headerName): ?string
     {
         $header = \array_values(\array_filter(
             $this->headers,
             function ($string) use ($headerName) {
-                return \preg_match('/'.$headerName.':(.*)/i', $string) == 1;
+                return \preg_match('/' . $headerName . ':(.*)/i', $string) === 1;
             }
         ));
 

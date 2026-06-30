@@ -1,16 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sepia\Test\UnitTest;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Sepia\PoParser\Catalog\Catalog;
 use Sepia\PoParser\Catalog\Header;
 use Sepia\PoParser\Parser;
 use Sepia\PoParser\SourceHandler\StringSource;
 
 class ParserTest extends TestCase
 {
-    /** @test */
-    public function should_parse_headers()
+    #[Test]
+    public function should_parse_headers(): void
     {
         $doc =
         'msgid ""
@@ -23,10 +27,10 @@ class ParserTest extends TestCase
         ';
         $catalog = $this->parse($doc);
 
-        $expectedHeaders = new Header(array(
+        $expectedHeaders = new Header([
             'Project-Id-Version: value 1',
             'Report-Msgid-Bugs-To: value 2',
-        ));
+        ]);
         $this->assertEquals(
             $expectedHeaders,
             $catalog->getHeader()
@@ -34,11 +38,9 @@ class ParserTest extends TestCase
     }
 
     /**
-     * @param string $doc
-     * @return \Sepia\PoParser\Catalog\Catalog|\Sepia\PoParser\Catalog\CatalogArray
      * @throws \Exception
      */
-    public function parse(string $doc)
+    public function parse(string $doc): Catalog
     {
         $parser = new Parser(new StringSource($doc));
         return $parser->parse();

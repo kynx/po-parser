@@ -1,27 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sepia\Test;
 
 use PHPUnit\Framework\TestCase;
 use Sepia\PoParser\Catalog\Catalog;
 use Sepia\PoParser\Parser;
 
-abstract class AbstractFixtureTest extends TestCase
+abstract class AbstractFixtureTestCase extends TestCase
 {
-    /** @var string */
-    protected $resourcesPath;
+    protected string $resourcesPath;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->resourcesPath = \dirname(__DIR__).'/fixtures/';
     }
 
-    /**
-     * @param string $file
-     *
-     * @return Catalog
-     */
-    protected function parseFile($file)
+    protected function parseFile(string $file): Catalog
     {
         //try {
             return Parser::parseFile($this->resourcesPath.$file);
