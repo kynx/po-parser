@@ -2,7 +2,7 @@
 
 [![Continuous Integration](https://github.com/kynx/po-parser/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/kynx/po-parser/actions/workflows/continuous-integration.yml)
 
-This is a modernised fork of [sepia/po-parser]. It parses [`gettext` PO] files (*.po files), enabling you to edit their 
+This is a modernised fork of [sepia/po-parser]. It parses [`gettext` PO] files (*.po files), enabling you to edit their
 contents using PHP.
 
 ## Features
@@ -56,7 +56,7 @@ $fileHandler->save($compiler->compile($catalog));
 ## Upgrading from `sepia/po-parser`
 
 The initial release is intended to be a drop-in replacement for `sepia/po-parser`, with property and return types and
-modern PHP syntax and development tooling to make maintenance easier. The original library is pretty feature-complete, 
+modern PHP syntax and development tooling to make maintenance easier. The original library is pretty feature-complete,
 so I don't anticipate major changes. But if there are bugs please open an issue!
 
 [sepia/po-parser]: https://github.com/pherrymason/PHP-po-parser
