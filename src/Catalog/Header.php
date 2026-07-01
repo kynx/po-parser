@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Sepia\PoParser\Catalog;
 
+use function array_filter;
+use function array_values;
+use function count;
+use function preg_match;
+
 class Header
 {
     /** @var array<string> */
@@ -33,12 +38,12 @@ class Header
         }
 
         $matches = [];
-        if (\preg_match('/nplurals=([0-9]+)/', $header, $matches) !== 1) {
+        if (preg_match('/nplurals=([0-9]+)/', $header, $matches) !== 1) {
             $this->nPlurals = 0;
             return $this->nPlurals;
         }
 
-        $this->nPlurals = isset($matches[1]) ? (int)$matches[1] : 0;
+        $this->nPlurals = isset($matches[1]) ? (int) $matches[1] : 0;
 
         return $this->nPlurals;
     }
@@ -61,13 +66,13 @@ class Header
 
     protected function getHeaderValue(string $headerName): ?string
     {
-        $header = \array_values(\array_filter(
+        $header = array_values(array_filter(
             $this->headers,
             function ($string) use ($headerName) {
-                return \preg_match('/' . $headerName . ':(.*)/i', $string) === 1;
+                return preg_match('/' . $headerName . ':(.*)/i', $string) === 1;
             }
         ));
 
-        return \count($header) ? $header[0] : null;
+        return count($header) ? $header[0] : null;
     }
 }

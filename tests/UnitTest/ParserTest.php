@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sepia\Test\UnitTest;
 
-use PHPUnit\Framework\Attributes\Test;
+use Exception;
 use PHPUnit\Framework\TestCase;
 use Sepia\PoParser\Catalog\Catalog;
 use Sepia\PoParser\Catalog\Header;
@@ -13,10 +13,9 @@ use Sepia\PoParser\SourceHandler\StringSource;
 
 class ParserTest extends TestCase
 {
-    #[Test]
-    public function should_parse_headers(): void
+    public function testShouldParseHeaders(): void
     {
-        $doc =
+        $doc     =
         'msgid ""
         msgstr ""
         "Project-Id-Version: value 1\n"
@@ -38,7 +37,7 @@ class ParserTest extends TestCase
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function parse(string $doc): Catalog
     {

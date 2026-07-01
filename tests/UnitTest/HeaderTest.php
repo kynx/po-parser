@@ -8,6 +8,8 @@ use PHPUnit\Framework\TestCase;
 use Sepia\PoParser\Catalog\Catalog;
 use Sepia\PoParser\Parser;
 
+use function dirname;
+
 class HeaderTest extends TestCase
 {
     public function testGetPluralFormsCount(): void
@@ -19,6 +21,6 @@ class HeaderTest extends TestCase
 
     protected function parseFile(): Catalog
     {
-        return Parser::parseFile(\dirname(\dirname(__DIR__)).'/fixtures/basicHeadersMultiline.po');
+        return Parser::parseFile(dirname(dirname(__DIR__)) . '/fixtures/basicHeadersMultiline.po');
     }
 }

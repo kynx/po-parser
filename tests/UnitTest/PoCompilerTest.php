@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace Sepia\Test\UnitTest;
 
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Sepia\PoParser\Catalog\CatalogArray;
 use Sepia\PoParser\PoCompiler;
 use Sepia\Test\EntryBuilder;
 
+use function mb_internal_encoding;
+
 class PoCompilerTest extends TestCase
 {
-    #[Test]
-    public function should_compile_single_line_translation(): void
+    public function testShouldCompileSingleLineTranslation(): void
     {
         $catalog = new CatalogArray([
             EntryBuilder::anEntry()
@@ -24,7 +24,7 @@ class PoCompilerTest extends TestCase
                 ->withReference(['src/views/forms.php:44'])
                 ->withTranslatorComment(['translator comment'])
                 ->withDeveloperComment(['developer comment'])
-                ->withFlags(['1','2','3'])
+                ->withFlags(['1', '2', '3'])
                 ->withPreviousEntry(
                     EntryBuilder::anEntry()
                         ->withId('previous.string.1')
@@ -32,15 +32,14 @@ class PoCompilerTest extends TestCase
                         ->build()
                 )
                 ->build(),
-
             EntryBuilder::anEntry()
                 ->withId('second message')
                 ->withTranslation('segón missatge')
-                ->build()
+                ->build(),
         ]);
 
         $compiler = new PoCompiler();
-        $output = $compiler->compile($catalog);
+        $output   = $compiler->compile($catalog);
 
         $this->assertEquals(
             <<<POFILE
@@ -56,57 +55,57 @@ class PoCompilerTest extends TestCase
             msgid "second message"
             msgstr "segón missatge"
             
-            POFILE
-            , $output);
+            POFILE,
+            $output
+        );
     }
 
-    #[Test]
-    public function should_compile_obsolete_translation(): void
+    public function testShouldCompileObsoleteTranslation(): void
     {
         $catalog = new CatalogArray([
             EntryBuilder::anEntry()
                 ->withId('a-message')
                 ->withTranslation('hello fellow ant')
                 ->obsolete()
-                ->build()
+                ->build(),
         ]);
 
         $compiler = new PoCompiler();
-        $output = $compiler->compile($catalog);
+        $output   = $compiler->compile($catalog);
 
         $this->assertEquals(
             <<<POFILE
             #~ msgid "a-message"
             #~ msgstr "hello fellow ant"
             
-            POFILE
-            , $output);
+            POFILE,
+            $output
+        );
     }
 
-    #[Test]
-    public function should_compile_multiple_line_translation(): void
+    public function testShouldCompileMultipleLineTranslation(): void
     {
         $catalog = new CatalogArray([
             EntryBuilder::anEntry()
                 ->withId('a-message')
                 ->withTranslation('hello fellow ant')
-                ->build()
+                ->build(),
         ]);
 
         $compiler = new PoCompiler();
-        $output = $compiler->compile($catalog);
+        $output   = $compiler->compile($catalog);
 
         $this->assertEquals(
             <<<POFILE
             msgid "a-message"
             msgstr "hello fellow ant"
             
-            POFILE
-            , $output);
+            POFILE,
+            $output
+        );
     }
 
-    #[Test]
-    public function should_compile_translation_with_plurals(): void
+    public function testShouldCompileTranslationWithPlurals(): void
     {
         $catalog = new CatalogArray([
             EntryBuilder::anEntry()
@@ -116,11 +115,11 @@ class PoCompilerTest extends TestCase
                 ->withPluralTranslation(0, 'translation plural 0')
                 ->withPluralTranslation(1, 'translation plural 1')
                 ->withPluralTranslation(2, 'translation plural 2')
-                ->build()
+                ->build(),
         ]);
 
         $compiler = new PoCompiler();
-        $output = $compiler->compile($catalog);
+        $output   = $compiler->compile($catalog);
 
         $this->assertEquals(
             <<<POFILE
@@ -130,12 +129,12 @@ class PoCompilerTest extends TestCase
             msgstr[1] "translation plural 1"
             msgstr[2] "translation plural 2"
             
-            POFILE
-            , $output);
+            POFILE,
+            $output
+        );
     }
 
-    #[Test]
-    public function should_compile_obsolete_plurals(): void
+    public function testShouldCompileObsoletePlurals(): void
     {
         $catalog = new CatalogArray([
             EntryBuilder::anEntry()
@@ -146,11 +145,11 @@ class PoCompilerTest extends TestCase
                 ->withPluralTranslation(1, 'translation plural 1')
                 ->withPluralTranslation(2, 'translation plural 2')
                 ->obsolete()
-                ->build()
+                ->build(),
         ]);
 
         $compiler = new PoCompiler();
-        $output = $compiler->compile($catalog);
+        $output   = $compiler->compile($catalog);
 
         $this->assertEquals(
             <<<POFILE
@@ -160,24 +159,22 @@ class PoCompilerTest extends TestCase
             #~ msgstr[1] "translation plural 1"
             #~ msgstr[2] "translation plural 2"
             
-            POFILE
-            , $output);
+            POFILE,
+            $output
+        );
     }
 
-    #[Test]
-    public function should_compile_escaping_special_chars(): void
+    public function testShouldCompileEscapingSpecialChars(): void
     {
         $catalog = new CatalogArray([
             EntryBuilder::anEntry()
                 ->withId('a\"b\"c')
                 ->withTranslation('quotes')
                 ->build(),
-
             EntryBuilder::anEntry()
                 ->withId('a\nb\nc')
                 ->withTranslation('slashes')
                 ->build(),
-
             EntryBuilder::anEntry()
                 ->withId("a\nb\nc")
                 ->withTranslation("proper\nlinebreaks")
@@ -185,49 +182,56 @@ class PoCompilerTest extends TestCase
         ]);
 
         $compiler = new PoCompiler();
-        $output = $compiler->compile($catalog);
+        $output   = $compiler->compile($catalog);
 
         $this->assertEquals(
-            'msgid "a\\\\\"b\\\\\"c"
-msgstr "quotes"
-
-msgid "a\\\\nb\\\\nc"
-msgstr "slashes"
-
-msgid "a\nb\nc"
-msgstr "proper\nlinebreaks"
-', $output);
+            <<<EXPECTED
+            msgid "a\\\\\"b\\\\\"c"
+            msgstr "quotes"
+            
+            msgid "a\\\\nb\\\\nc"
+            msgstr "slashes"
+            
+            msgid "a\\nb\\nc"
+            msgstr "proper\\nlinebreaks"
+            
+            EXPECTED,
+            $output
+        );
     }
 
     /**
      * @param array<string> $assert
      */
-    #[Test]
     #[DataProvider('wrappingDataProvider')]
-    public function should_compile_translation_with_wrapping_long_lines(string $value, int $wrappingColumn, bool $shouldWrapLines, array $assert): void
-    {
+    public function testShouldCompileTranslationWithWrappingLongLines(
+        string $value,
+        int $wrappingColumn,
+        bool $shouldWrapLines,
+        array $assert
+    ): void {
         // Make sure that encoding is set to UTF-8 for this test
-        \mb_internal_encoding();
-        \mb_internal_encoding('UTF-8');
+        mb_internal_encoding();
+        mb_internal_encoding('UTF-8');
 
         $catalog = new CatalogArray([
             EntryBuilder::anEntry()
                 ->withId('a-message')
                 ->withTranslation($value)
-                ->build()
+                ->build(),
         ]);
 
         $compiler = new PoCompiler($wrappingColumn);
-        $output = $compiler->compile($catalog);
+        $output   = $compiler->compile($catalog);
 
-        $expected = 'msgid "a-message"'."\n";
+        $expected = 'msgid "a-message"' . "\n";
         if ($shouldWrapLines) {
             $expected .= 'msgstr ""' . "\n";
         } else {
-            $expected.= 'msgstr ';
+            $expected .= 'msgstr ';
         }
         foreach ($assert as $line) {
-            $expected.= '"'.$line.'"'."\n";
+            $expected .= '"' . $line . '"' . "\n";
         }
 
         $this->assertEquals($expected, $output);
@@ -238,67 +242,62 @@ msgstr "proper\nlinebreaks"
      */
     public static function wrappingDataProvider(): array
     {
+        // phpcs:disable Generic.Files.LineLength.TooLong
         return [
-            'Multibyte Wrap (char 81)' => [
-                'value' => 'Hello everybody, Hello ladies and gentlemen.... this is a multibyte translation á with a multibyte beginning at char 81.',
-                'wrappingColumn' => 80,
+            'Multibyte Wrap (char 81)'          => [
+                'value'           => 'Hello everybody, Hello ladies and gentlemen.... this is a multibyte translation á with a multibyte beginning at char 81.',
+                'wrappingColumn'  => 80,
                 'shouldWrapLines' => true,
-                'assert' => [
+                'assert'          => [
                     'Hello everybody, Hello ladies and gentlemen.... this is a multibyte translation ',
-                    'á with a multibyte beginning at char 81.'
+                    'á with a multibyte beginning at char 81.',
                 ],
             ],
-            'Multibyte Wrap (char 80)' => [
-                'value' => 'Hello everybody, Hello ladies and gentlemen... this is a multibyte translation á with a multibyte beginning at char 80.',
-                'wrappingColumn' => 80,
+            'Multibyte Wrap (char 80)'          => [
+                'value'           => 'Hello everybody, Hello ladies and gentlemen... this is a multibyte translation á with a multibyte beginning at char 80.',
+                'wrappingColumn'  => 80,
                 'shouldWrapLines' => true,
-                'assert' => [
+                'assert'          => [
                     'Hello everybody, Hello ladies and gentlemen... this is a multibyte translation á',
-                    ' with a multibyte beginning at char 80.'
+                    ' with a multibyte beginning at char 80.',
                 ],
             ],
-            'Multibyte Wrap (char 79)' => [
-                'value' => 'Hello everybody, Hello ladies and gentlemen.. this is a multibyte translation á with multibytes beginning at char 79.',
-                'wrappingColumn' => 80,
+            'Multibyte Wrap (char 79)'          => [
+                'value'           => 'Hello everybody, Hello ladies and gentlemen.. this is a multibyte translation á with multibytes beginning at char 79.',
+                'wrappingColumn'  => 80,
                 'shouldWrapLines' => true,
-                'assert' => [
+                'assert'          => [
                     'Hello everybody, Hello ladies and gentlemen.. this is a multibyte translation á ',
-                    'with multibytes beginning at char 79.'
+                    'with multibytes beginning at char 79.',
                 ],
             ],
             'Escape-Sequence Wrap (char 80+81)' => [
-                'value' => 'Hello everybody, Hello ladies and gentlemen..... this is a line with more than \"eighty\" chars. And char 80+81 is an escaped double quote.',
-                'wrappingColumn' => 80,
+                'value'           => 'Hello everybody, Hello ladies and gentlemen..... this is a line with more than \"eighty\" chars. And char 80+81 is an escaped double quote.',
+                'wrappingColumn'  => 80,
                 'shouldWrapLines' => true,
-                'assert' => [
+                'assert'          => [
                     'Hello everybody, Hello ladies and gentlemen..... this is a line with more than ',
-                    '\\\\\"eighty\\\\\" chars. And char 80+81 is an escaped double quote.'
+                    '\\\\\"eighty\\\\\" chars. And char 80+81 is an escaped double quote.',
                 ],
             ],
             'Escape-Sequence Wrap (char 79+80)' => [
-                'value' => 'Hello everybody, Hello ladies and gentlemen.... this is a line with more than \"eighty\" chars. And char 79+80 is an escaped double quote.',
-                'wrappingColumn' => 80,
+                'value'           => 'Hello everybody, Hello ladies and gentlemen.... this is a line with more than \"eighty\" chars. And char 79+80 is an escaped double quote.',
+                'wrappingColumn'  => 80,
                 'shouldWrapLines' => true,
-                'assert' => [
+                'assert'          => [
                     'Hello everybody, Hello ladies and gentlemen.... this is a line with more than ',
-                    '\\\\\"eighty\\\\\" chars. And char 79+80 is an escaped double quote.'
+                    '\\\\\"eighty\\\\\" chars. And char 79+80 is an escaped double quote.',
                 ],
             ],
-            /*    'Escaped Line-break' => array(
-                    'value' => 'Hello everybody, \\nHello ladies and gentlemen.',
-                    'wrappingColumn' => 80,
-                    'assert' => array(
-                        'Hello everybody, \\\\nHello ladies and gentlemen.'
-                    ),
-                ),
-              */ 'String with a lot of multibyte characters should not break when wrappingColumn is at its mb_strlen' => [
-                'value' => 'kategóriáját kötelező',
-                'wrappingColumn' => 21,
+            'String with a lot of multibyte characters should not break when wrappingColumn is at its mb_strlen' => [
+                'value'           => 'kategóriáját kötelező',
+                'wrappingColumn'  => 21,
                 'shouldWrapLines' => false,
-                'assert' => [
-                    'kategóriáját kötelező'
+                'assert'          => [
+                    'kategóriáját kötelező',
                 ],
             ],
         ];
+        // phpcs:enable
     }
 }

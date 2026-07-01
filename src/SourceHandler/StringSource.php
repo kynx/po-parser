@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Sepia\PoParser\SourceHandler;
 
+use function count;
+use function explode;
+
 /**
  *    Copyright (c) 2012 Raúl Ferràs raul.ferras@gmail.com
  *    All rights reserved.
@@ -45,9 +48,9 @@ class StringSource implements SourceHandler
 
     public function __construct(string $string)
     {
-        $this->line = 0;
-        $this->strings = \explode("\n",$string);
-        $this->total = \count($this->strings);
+        $this->line    = 0;
+        $this->strings = explode("\n", $string);
+        $this->total   = count($this->strings);
     }
 
     public function getNextLine(): false|string
@@ -63,7 +66,7 @@ class StringSource implements SourceHandler
 
     public function ended(): bool
     {
-        return ($this->line>=$this->total);
+        return $this->line >= $this->total;
     }
 
     public function close(): bool

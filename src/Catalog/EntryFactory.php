@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Sepia\PoParser\Catalog;
 
+use function count;
+use function strpos;
+
 /**
  * @phpstan-type EntryArray = array{
  *     msgid: string,
@@ -17,9 +20,9 @@ class EntryFactory
      */
     public static function createFromArray(array $entryArray): Entry
     {
-        $entry = new Entry(
+        $entry   = new Entry(
             $entryArray['msgid'],
-            isset($entryArray['msgstr']) ? $entryArray['msgstr'] : null
+            $entryArray['msgstr'] ?? null
         );
         $plurals = [];
 
@@ -53,15 +56,15 @@ class EntryFactory
                     $entry->setObsolete(true);
                     break;
 
-                case 0 === \strpos($key, 'msgstr['):
+                case 0 === strpos($key, 'msgstr['):
                     $plurals[] = $value;
                     break;
             }
         }
 
-        if (\count($plurals) > 0) {
+        if (count($plurals) > 0) {
             $entry->setMsgStrPlurals($plurals);
-            if(!empty($entryArray['msgid_plural'])){
+            if (! empty($entryArray['msgid_plural'])) {
                 $entry->setMsgIdPlural($entryArray['msgid_plural']);
             }
         }
