@@ -6,10 +6,14 @@ namespace Sepia\PoParser\Catalog;
 
 class Header
 {
+    /** @var array<string> */
     protected array $headers;
 
     protected ?int $nPlurals;
 
+    /**
+     * @param array<string> $headers
+     */
     public function __construct(array $headers = [])
     {
         $this->setHeaders($headers);
@@ -39,11 +43,17 @@ class Header
         return $this->nPlurals;
     }
 
+    /**
+     * @param array<string> $headers
+     */
     public function setHeaders(array $headers): void
     {
         $this->headers = $headers;
     }
 
+    /**
+     * @return array<string>
+     */
     public function asArray(): array
     {
         return $this->headers;

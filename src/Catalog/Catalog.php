@@ -12,12 +12,15 @@ interface Catalog
 
     public function removeEntry(string $msgid, ?string $msgctxt = null): void;
 
+    /**
+     * @return array<string>
+     */
     public function getHeaders(): array;
 
     public function getHeader(): Header;
 
     /**
-     * @return Entry[]
+     * @return array<string, Entry>
      */
     public function getEntries(): array;
 

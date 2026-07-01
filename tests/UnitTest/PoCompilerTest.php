@@ -199,6 +199,9 @@ msgstr "proper\nlinebreaks"
 ', $output);
     }
 
+    /**
+     * @param array<string> $assert
+     */
     #[Test]
     #[DataProvider('wrappingDataProvider')]
     public function should_compile_translation_with_wrapping_long_lines(string $value, int $wrappingColumn, bool $shouldWrapLines, array $assert): void
@@ -230,6 +233,9 @@ msgstr "proper\nlinebreaks"
         $this->assertEquals($expected, $output);
     }
 
+    /**
+     * @return array<string, array{value: string, wrappingColumn: int, shouldWrapLines: bool, assert: array<string>}>
+     */
     public static function wrappingDataProvider(): array
     {
         return [
