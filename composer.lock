@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "052db6eb43abfd3a8ceaa2d5c5af0885",
+    "content-hash": "504d66013051a940ef387de440e0d3b9",
     "packages": [
         {
             "name": "symfony/polyfill-mbstring",
@@ -527,11 +527,11 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "2.2.2",
+            "version": "2.2.3",
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/e5cc34d491a90e79c216d824f60fe21fd4d93bd6",
-                "reference": "e5cc34d491a90e79c216d824f60fe21fd4d93bd6",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/4048833dd47b377287818841877fb3087289509c",
+                "reference": "4048833dd47b377287818841877fb3087289509c",
                 "shasum": ""
             },
             "require": {
@@ -587,7 +587,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-06-05T09:00:01+00:00"
+            "time": "2026-06-30T21:15:26+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -2244,5 +2244,8 @@
         "php": "^8.3.0 || ^8.4.0 || ^8.5.0"
     },
     "platform-dev": {},
+    "platform-overrides": {
+        "php": "8.3.99"
+    },
     "plugin-api-version": "2.9.0"
 }
