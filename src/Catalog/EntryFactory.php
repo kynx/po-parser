@@ -4,8 +4,17 @@ declare(strict_types=1);
 
 namespace Sepia\PoParser\Catalog;
 
+/**
+ * @phpstan-type EntryArray = array{
+ *     msgid: string,
+ *     ...<string|array<string>>
+ * }
+ */
 class EntryFactory
 {
+    /**
+     * @param EntryArray $entryArray
+     */
     public static function createFromArray(array $entryArray): Entry
     {
         $entry = new Entry(
@@ -21,11 +30,11 @@ class EntryFactory
                     break;
 
                 case $key === 'flags':
-                    $entry->setFlags($entryArray['flags']);
+                    $entry->setFlags((array) $entryArray['flags']);
                     break;
 
                 case $key === 'reference':
-                    $entry->setReference($entryArray['reference']);
+                    $entry->setReference((array) $entryArray['reference']);
                     break;
 
                 case $key === 'previous':

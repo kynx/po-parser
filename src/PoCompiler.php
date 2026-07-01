@@ -239,6 +239,9 @@ class PoCompiler
         return str_replace($this->tokenCarriageReturn, '\n', $string);
     }
 
+    /**
+     * @return array<string>
+     */
     private function wrapString(string $value): array
     {
         $length = mb_strlen($value);

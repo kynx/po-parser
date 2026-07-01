@@ -12,6 +12,7 @@ class Entry
 
     protected ?string $msgIdPlural;
 
+    /** @var array<string> */
     protected array $msgStrPlurals;
 
     protected ?string $msgCtxt;
@@ -20,12 +21,16 @@ class Entry
 
     protected ?bool $obsolete;
 
+    /** @var array<string> */
     protected array $flags;
 
+    /** @var array<string> */
     protected array $translatorComments;
 
+    /** @var array<string> */
     protected array $developerComments;
 
+    /** @var array<string> */
     protected array $reference;
 
     public function __construct(string $msgId, ?string $msgStr = null)
@@ -85,6 +90,9 @@ class Entry
         return $this;
     }
 
+    /**
+     * @param array<string> $flags
+     */
     public function setFlags(array $flags): self
     {
         $this->flags = $flags;
@@ -92,6 +100,9 @@ class Entry
         return $this;
     }
 
+    /**
+     * @param array<string> $translatorComments
+     */
     public function setTranslatorComments(array $translatorComments): self
     {
         $this->translatorComments = $translatorComments;
@@ -99,6 +110,9 @@ class Entry
         return $this;
     }
 
+    /**
+     * @param array<string> $developerComments
+     */
     public function setDeveloperComments(array $developerComments): self
     {
         $this->developerComments = $developerComments;
@@ -106,6 +120,9 @@ class Entry
         return $this;
     }
 
+    /**
+     * @param array<string> $reference
+     */
     public function setReference(array $reference): self
     {
         $this->reference = $reference;
@@ -113,6 +130,9 @@ class Entry
         return $this;
     }
 
+    /**
+     * @param array<string> $msgStrPlurals
+     */
     public function setMsgStrPlurals(array $msgStrPlurals): self
     {
         $this->msgStrPlurals = $msgStrPlurals;
@@ -160,28 +180,40 @@ class Entry
         return $this->getMsgIdPlural() !== null || \count($this->getMsgStrPlurals()) > 0;
     }
 
+    /**
+     * @return array<string>
+     */
     public function getFlags(): array
     {
         return $this->flags;
     }
 
+    /**
+     * @return array<string>
+     */
     public function getTranslatorComments(): array
     {
         return $this->translatorComments;
     }
 
+    /**
+     * @return array<string>
+     */
     public function getDeveloperComments(): array
     {
         return $this->developerComments;
     }
 
+    /**
+     * @return array<string>
+     */
     public function getReference(): array
     {
         return $this->reference;
     }
 
     /**
-     * @return string[]
+     * @return array<string>
      */
     public function getMsgStrPlurals(): array
     {

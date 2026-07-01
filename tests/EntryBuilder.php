@@ -41,12 +41,17 @@ class EntryBuilder
     private ?string $msgPluralId;
     private ?string $msgStr;
     private ?string $context;
+    /** @var array<string> */
     private array $reference;
+    /** @var array<string> */
     private array $translatorComments;
+    /** @var array<string> */
     private array $developerComments;
+    /** @var array<string> */
     private array $flags;
     private ?Entry $previousEntry;
     private bool $obsolete;
+    /** @var array<string> */
     private array $pluralTranslations;
 
     public function __construct()
@@ -96,24 +101,36 @@ class EntryBuilder
         return $this;
     }
 
+    /**
+     * @param array<string> $reference
+     */
     public function withReference(array $reference): self
     {
         $this->reference = $reference;
         return $this;
     }
 
+    /**
+     * @param array<string> $comments
+     */
     public function withTranslatorComment(array $comments): self
     {
         $this->translatorComments = $comments;
         return $this;
     }
 
+    /**
+     * @param array<string> $comments
+     */
     public function withDeveloperComment(array $comments): self
     {
         $this->developerComments = $comments;
         return $this;
     }
 
+    /**
+     * @param array<string> $flags
+     */
     public function withFlags(array $flags): self
     {
         $this->flags = $flags;

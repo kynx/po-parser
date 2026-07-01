@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Sepia\Test;
 
 use Exception;
-use Faker\Factory;
 use PHPUnit\Framework\Attributes\DataProvider;
 use ReflectionClass;
 use ReflectionException;
@@ -43,7 +42,7 @@ class WriteTest extends AbstractFixtureTestCase
             'msgid' => 'obsolete.1',
             'msgstr' => 'Test string',
             'msgctxt' => 'obsolete.context',
-            'obsolete' => true,
+            'obsolete' => 'obsolete',
         ]);
         $catalogSource->addEntry($entry);
 
@@ -121,6 +120,9 @@ class WriteTest extends AbstractFixtureTestCase
         $this->assertNotNull($catalog->getEntry("a\nb\nc"));
     }
 
+    /**
+     * @return array<string, array{value: string, wrappingColumn: int, assert: array<string>}>
+     */
     public static function wrappingDataProvider(): array
     {
         return [
@@ -181,6 +183,9 @@ class WriteTest extends AbstractFixtureTestCase
         ];
     }
 
+    /**
+     * @param array<string> $assert
+     */
     #[DataProvider('wrappingDataProvider')]
     public function testWrapping(string $value, int $wrappingColumn, array $assert): void
     {
@@ -193,12 +198,10 @@ class WriteTest extends AbstractFixtureTestCase
         try {
             // Use Reflection and make private method accessible...
             $method = $class->getMethod('wrapString');
-            $method->setAccessible(true);
             $compiler = new PoCompiler($wrappingColumn);
 
-        } catch (ReflectionException $e) {
+        } catch (ReflectionException) {
             $this->fail('Method wrapString not found in PoCompiler');
-            return;
         }
 
         // Test the private method
@@ -254,7 +257,7 @@ class WriteTest extends AbstractFixtureTestCase
             'tcomment' => ['translator comment'],
             'ccomment' => ['code comment'],
             'flags' => ['fuzzy'],
-            'obsolete' => true,
+            'obsolete' => 'obsolete',
         ]);
 
         $catalogSource->addEntry($entry);

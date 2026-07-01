@@ -10,6 +10,9 @@ class CatalogArray implements Catalog
     protected array $entries;
     protected Header $headers;
 
+    /**
+     * @param array<Entry> $entries
+     */
     public function __construct(array $entries = [])
     {
         $this->headers = new Header();
@@ -42,6 +45,9 @@ class CatalogArray implements Catalog
         }
     }
 
+    /**
+     * @return array<string>
+     */
     public function getHeaders(): array
     {
         return $this->headers->asArray();

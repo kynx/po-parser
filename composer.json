@@ -26,7 +26,8 @@
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^4.0",
-    "phpunit/phpunit": "^12.5"
+    "phpunit/phpunit": "^12.5",
+    "phpstan/phpstan": "^2.2"
   },
   "autoload": {
     "psr-4": {

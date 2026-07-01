@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sepia\PoParser;
 
+use InvalidArgumentException;
 use Sepia\PoParser\Catalog\Catalog;
 use Sepia\PoParser\Catalog\CatalogArray;
 use Sepia\PoParser\Catalog\EntryFactory;
@@ -87,7 +88,7 @@ class Parser
     /**
      * Reads and parses strings of a .po file.
      *
-     * @throws \Exception, \InvalidArgumentException, ParseException
+     * @throws ParseException
      */
     public function parse(?Catalog $catalog = null): Catalog
     {
@@ -148,6 +149,9 @@ class Parser
     }
 
     /**
+     * @param array<string> $entry
+     * @return array<string>
+     *
      * @throws ParseException
      */
     protected function parseLine(string $line, array $entry): array
@@ -172,11 +176,14 @@ class Parser
     }
 
     /**
+     * @param array<string> $entry
+     * @return array<string>
+     *
      * @throws ParseException
      */
     protected function parseProperty(string $line, array $entry): array
     {
-        list($key, $value) = $this->getProperty($line);
+        [$key, $value] = $this->getProperty($line);
 
         if (!isset($entry[$key])) {
             $entry[$key] = '';
@@ -204,6 +211,9 @@ class Parser
     }
 
     /**
+     * @param array<string> $entry
+     * @return array<string>
+     *
      * @throws ParseException
      */
     protected function parseMultiline(string $line, array $entry): array
@@ -227,6 +237,9 @@ class Parser
     }
 
     /**
+     * @param array<string> $entry
+     * @return array<string>
+     *
      * @throws ParseException
      */
     protected function parseComment(string $line, array $entry): array
@@ -268,18 +281,19 @@ class Parser
                     $entry[$property] = $subEntry;
                 } else {
                     $entry = $this->parseLine($line, $entry);
-                    $entry['obsolete'] = true;
+                    $entry['obsolete'] = $mode;
                 }
                 break;
 
             // Reference
             case '#:':
+                $entry['reference'] ??= [];
                 $entry['reference'][] = \trim(\substr($line, 2));
                 break;
 
             case '#':
             default:
-                $entry['tcomment'] = !isset($entry['tcomment']) ? [] : $entry['tcomment'];
+                $entry['tcomment'] ??= [];
                 $entry['tcomment'][] = \trim(\substr($line, 1));
                 break;
         }
@@ -294,11 +308,17 @@ class Parser
         return new Header($headers);
     }
 
+    /**
+     * @param array<string> $entry
+     */
     protected function shouldIgnoreLine(string $line, array $entry): bool
     {
         return empty($line) && \count($entry) === 0;
     }
 
+    /**
+     * @param array<string> $entry
+     */
     protected function shouldCloseEntry(string $line, array $entry): bool
     {
         $tokens = $this->getProperty($line);
@@ -314,6 +334,8 @@ class Parser
 
     /**
      * Checks if entry is a header by
+     *
+     * @param array<string> $entry
      */
     protected function isHeader(array $entry): bool
     {
@@ -358,17 +380,20 @@ class Parser
         $customHeaders = \array_filter(
             $headers,
             function ($header) {
-                return \preg_match('/^X\-(.*):/i', $header) === 1;
+                return \preg_match('/^X-(.*):/i', $header) === 1;
             }
         );
 
         return \count($customHeaders) > 0;
     }
 
+    /**
+     * @return array<string>
+     */
     protected function getProperty(string $line): array
     {
-        $tokens = \preg_split('/\s+/ ', $line, 2);
+        $tokens = \preg_split('/\s+/', $line, 2);
 
-        return $tokens;
+        return $tokens ?: [];
     }
 }
