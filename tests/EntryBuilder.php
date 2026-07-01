@@ -56,14 +56,14 @@ class EntryBuilder
 
     public function __construct()
     {
-        $this->msgPluralId = null;
-        $this->context = null;
-        $this->reference = [];
+        $this->msgPluralId        = null;
+        $this->context            = null;
+        $this->reference          = [];
         $this->translatorComments = [];
-        $this->developerComments = [];
-        $this->flags = [];
-        $this->previousEntry = null;
-        $this->obsolete = false;
+        $this->developerComments  = [];
+        $this->flags              = [];
+        $this->previousEntry      = null;
+        $this->obsolete           = false;
         $this->pluralTranslations = [];
     }
 

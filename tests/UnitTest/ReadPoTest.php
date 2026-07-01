@@ -7,6 +7,8 @@ namespace Sepia\Test\UnitTest;
 use Sepia\PoParser\Catalog\Entry;
 use Sepia\Test\AbstractFixtureTestCase;
 
+use function count;
+
 class ReadPoTest extends AbstractFixtureTestCase
 {
     public function testBasic(): void
@@ -86,7 +88,7 @@ class ReadPoTest extends AbstractFixtureTestCase
     public function testPluralsMultiline(): void
     {
         $catalog = $this->parseFile('pluralsMultiline.po');
-        $entry = $catalog->getEntry('%s post not updated,somebody is editing it.');
+        $entry   = $catalog->getEntry('%s post not updated,somebody is editing it.');
 
         $this->assertNotNull($entry);
         $this->assertNotEmpty($entry->getMsgStrPlurals());
@@ -124,7 +126,7 @@ class ReadPoTest extends AbstractFixtureTestCase
     public function testTranslatorComment(): void
     {
         $catalog = $this->parseFile('translatorComments.po');
-        $entry = $catalog->getEntry('string.1');
+        $entry   = $catalog->getEntry('string.1');
 
         $this->assertNotNull($entry);
         $this->assertEquals(
@@ -136,7 +138,7 @@ class ReadPoTest extends AbstractFixtureTestCase
     public function testDeveloperComment(): void
     {
         $catalog = $this->parseFile('codeComments.po');
-        $entry = $catalog->getEntry('string.1');
+        $entry   = $catalog->getEntry('string.1');
 
         $this->assertNotNull($entry);
         $this->assertEquals(['code comment', 'code translator comment'], $entry->getDeveloperComments());
@@ -158,7 +160,9 @@ class ReadPoTest extends AbstractFixtureTestCase
         $this->assertCount(1, $catalog->getEntries());
 
         $entry = new Entry('this is a string', 'this is a translation');
-        $entry->setPreviousEntry(new Entry('this is a previous string', 'this is a previous translation string'));
+        $entry->setPreviousEntry(
+            new Entry('this is a previous string', 'this is a previous translation string')
+        );
         $this->assertEquals(
             $entry,
             $catalog->getEntry('this is a string')
@@ -175,6 +179,7 @@ class ReadPoTest extends AbstractFixtureTestCase
         $previous = $entry->getPreviousEntry();
         $this->assertNotNull($previous);
         $this->assertEquals('this is a previous string', $previous->getMsgId());
+        // phpcs:ignore Generic.Files.LineLength.TooLong
         $this->assertEquals('Doloribus nulla odit et aut est. Rerum molestiae pariatur suscipit unde in quidem alias alias. Ut ea omnis placeat rerum quae asperiores. Et recusandae praesentium ea.', $previous->getMsgStr());
     }
 
@@ -188,21 +193,21 @@ class ReadPoTest extends AbstractFixtureTestCase
     {
         $catalog = $this->parseFile('basicCustomHeaders.po');
         $this->assertCount(1, $catalog->getEntries());
-        $this->assertGreaterThanOrEqual(1, \count($catalog->getHeaders()));
+        $this->assertGreaterThanOrEqual(1, count($catalog->getHeaders()));
     }
 
     public function testHeadersMultiline(): void
     {
         $catalog = $this->parseFile('basicHeadersMultiline.po');
         $this->assertCount(1, $catalog->getEntries());
-        $this->assertCount(3,$catalog->getHeaders());
+        $this->assertCount(3, $catalog->getHeaders());
     }
 
     public function testFileWithOnlyHeaders(): void
     {
         $catalog = $this->parseFile('basicOnlyHeader.po');
         $this->assertCount(0, $catalog->getEntries());
-        $this->assertGreaterThanOrEqual(1, \count($catalog->getHeaders()));
+        $this->assertGreaterThanOrEqual(1, count($catalog->getHeaders()));
     }
 
     public function testNoBlankLinesSeparatingEntries(): void

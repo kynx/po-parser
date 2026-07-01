@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Sepia\PoParser\Catalog;
 
+use function md5;
+
 class CatalogArray implements Catalog
 {
     /** @var array<string, Entry> */
@@ -25,7 +27,7 @@ class CatalogArray implements Catalog
 
     public function addEntry(Entry $entry): void
     {
-        $key = $this->getEntryHash(
+        $key                 = $this->getEntryHash(
             $entry->getMsgId(),
             $entry->getMsgCtxt()
         );
@@ -66,7 +68,7 @@ class CatalogArray implements Catalog
     public function getEntry(string $msgId, ?string $context = null): ?Entry
     {
         $key = $this->getEntryHash($msgId, $context);
-        if (!isset($this->entries[$key])) {
+        if (! isset($this->entries[$key])) {
             return null;
         }
 
@@ -75,6 +77,6 @@ class CatalogArray implements Catalog
 
     private function getEntryHash(string $msgId, ?string $context = null): string
     {
-        return \md5($msgId.$context);
+        return md5($msgId . $context);
     }
 }

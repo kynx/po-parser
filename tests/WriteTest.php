@@ -14,6 +14,9 @@ use Sepia\PoParser\Catalog\EntryFactory;
 use Sepia\PoParser\PoCompiler;
 use Sepia\PoParser\SourceHandler\FileSystem;
 
+use function file_get_contents;
+use function mb_internal_encoding;
+
 class WriteTest extends AbstractFixtureTestCase
 {
     public function testWrite(): void
@@ -21,27 +24,27 @@ class WriteTest extends AbstractFixtureTestCase
         $catalogSource = new CatalogArray();
 
         // Normal Entry
-        $entry = EntryFactory::createFromArray([
-            'msgid' => 'string.1',
-            'msgstr' => 'translation.1',
-            'msgctxt' => 'context.1',
+        $entry         = EntryFactory::createFromArray([
+            'msgid'     => 'string.1',
+            'msgstr'    => 'translation.1',
+            'msgctxt'   => 'context.1',
             'reference' => ['src/views/forms.php:44'],
-            'tcomment' => ['translator comment'],
-            'ccomment' => ['code comment'],
-            'flags' => ['1', '2', '3'],
+            'tcomment'  => ['translator comment'],
+            'ccomment'  => ['code comment'],
+            'flags'     => ['1', '2', '3'],
         ]);
         $previousEntry = EntryFactory::createFromArray([
-           'msgid' => 'previous.string.1',
-           'msgctxt' => 'previous.context.1',
+            'msgid'   => 'previous.string.1',
+            'msgctxt' => 'previous.context.1',
         ]);
         $entry->setPreviousEntry($previousEntry);
         $catalogSource->addEntry($entry);
 
         // Obsolete entry
         $entry = EntryFactory::createFromArray([
-            'msgid' => 'obsolete.1',
-            'msgstr' => 'Test string',
-            'msgctxt' => 'obsolete.context',
+            'msgid'    => 'obsolete.1',
+            'msgstr'   => 'Test string',
+            'msgctxt'  => 'obsolete.context',
             'obsolete' => 'obsolete',
         ]);
         $catalogSource->addEntry($entry);
@@ -61,15 +64,15 @@ class WriteTest extends AbstractFixtureTestCase
         $catalogSource = new CatalogArray();
         // Normal Entry
         $entry = EntryFactory::createFromArray([
-            'msgid' => 'string.1',
-            'msgstr' => 'translation.1',
+            'msgid'     => 'string.1',
+            'msgstr'    => 'translation.1',
             'msgstr[0]' => 'translation.plural.0',
             'msgstr[1]' => 'translation.plural.1',
             'msgstr[2]' => 'translation.plural.2',
             'reference' => ['src/views/forms.php:44'],
-            'tcomment' => ['translator comment'],
-            'ccomment' => ['code comment'],
-            'flags' => ['1', '2', '3'],
+            'tcomment'  => ['translator comment'],
+            'ccomment'  => ['code comment'],
+            'flags'     => ['1', '2', '3'],
         ]);
 
         $catalogSource->addEntry($entry);
@@ -80,7 +83,7 @@ class WriteTest extends AbstractFixtureTestCase
             $this->fail('Cannot save catalog.');
         }
         $catalog = $this->parseFile('temp.po');
-        $entry = $catalog->getEntry('string.1');
+        $entry   = $catalog->getEntry('string.1');
         $this->assertCount(3, $entry->getMsgStrPlurals());
     }
 
@@ -89,20 +92,20 @@ class WriteTest extends AbstractFixtureTestCase
         $catalogSource = new CatalogArray();
         // Normal Entry
         $entry = EntryFactory::createFromArray([
-            'msgid' => 'a\"b\"c',
+            'msgid'  => 'a\"b\"c',
             'msgstr' => 'quotes',
         ]);
         $catalogSource->addEntry($entry);
 
         $entry = EntryFactory::createFromArray([
-            'msgid' => 'a\nb\nc',
+            'msgid'  => 'a\nb\nc',
             'msgstr' => 'slashes',
         ]);
         $catalogSource->addEntry($entry);
 
         // Entry with line breaks
         $entry = EntryFactory::createFromArray([
-            'msgid' => "a\nb\nc",
+            'msgid'  => "a\nb\nc",
             'msgstr' => "proper\nlinebreaks",
         ]);
         $catalogSource->addEntry($entry);
@@ -125,62 +128,64 @@ class WriteTest extends AbstractFixtureTestCase
      */
     public static function wrappingDataProvider(): array
     {
+        // phpcs:disable Generic.Files.LineLength.TooLong
         return [
-            'Multibyte Wrap (char 81)' => [
-                'value' => 'Hello everybody, Hello ladies and gentlemen.... this is a multibyte translation á with a multibyte beginning at char 81.',
+            'Multibyte Wrap (char 81)'          => [
+                'value'          => 'Hello everybody, Hello ladies and gentlemen.... this is a multibyte translation á with a multibyte beginning at char 81.',
                 'wrappingColumn' => 80,
-                'assert' => [
+                'assert'         => [
                     'Hello everybody, Hello ladies and gentlemen.... this is a multibyte translation ',
                     'á with a multibyte beginning at char 81.',
                 ],
             ],
-            'Multibyte Wrap (char 80)' => [
-                'value' => 'Hello everybody, Hello ladies and gentlemen... this is a multibyte translation á with a multibyte beginning at char 80.',
+            'Multibyte Wrap (char 80)'          => [
+                'value'          => 'Hello everybody, Hello ladies and gentlemen... this is a multibyte translation á with a multibyte beginning at char 80.',
                 'wrappingColumn' => 80,
-                'assert' => [
+                'assert'         => [
                     'Hello everybody, Hello ladies and gentlemen... this is a multibyte translation á',
                     ' with a multibyte beginning at char 80.',
                 ],
             ],
-            'Multibyte Wrap (char 79)' => [
-                'value' => 'Hello everybody, Hello ladies and gentlemen.. this is a multibyte translation á with multibytes beginning at char 79.',
+            'Multibyte Wrap (char 79)'          => [
+                'value'          => 'Hello everybody, Hello ladies and gentlemen.. this is a multibyte translation á with multibytes beginning at char 79.',
                 'wrappingColumn' => 80,
-                'assert' => [
+                'assert'         => [
                     'Hello everybody, Hello ladies and gentlemen.. this is a multibyte translation á ',
                     'with multibytes beginning at char 79.',
                 ],
             ],
             'Escape-Sequence Wrap (char 80+81)' => [
-                'value' => 'Hello everybody, Hello ladies and gentlemen..... this is a line with more than \"eighty\" chars. And char 80+81 is an escaped double quote.',
+                'value'          => 'Hello everybody, Hello ladies and gentlemen..... this is a line with more than \"eighty\" chars. And char 80+81 is an escaped double quote.',
                 'wrappingColumn' => 80,
-                'assert' => [
+                'assert'         => [
                     'Hello everybody, Hello ladies and gentlemen..... this is a line with more than ',
                     '\"eighty\" chars. And char 80+81 is an escaped double quote.',
                 ],
             ],
             'Escape-Sequence Wrap (char 79+80)' => [
-                'value' => 'Hello everybody, Hello ladies and gentlemen.... this is a line with more than \"eighty\" chars. And char 79+80 is an escaped double quote.',
+                'value'          => 'Hello everybody, Hello ladies and gentlemen.... this is a line with more than \"eighty\" chars. And char 79+80 is an escaped double quote.',
                 'wrappingColumn' => 80,
-                'assert' => [
+                'assert'         => [
                     'Hello everybody, Hello ladies and gentlemen.... this is a line with more than ',
                     '\"eighty\" chars. And char 79+80 is an escaped double quote.',
                 ],
             ],
-            'Escaped Line-break' => [
-                'value' => 'Hello everybody, \\nHello ladies and gentlemen.',
+            'Escaped Line-break'                => [
+                'value'          => 'Hello everybody, \\nHello ladies and gentlemen.',
                 'wrappingColumn' => 80,
-                'assert' => [
+                'assert'         => [
                     'Hello everybody, \\nHello ladies and gentlemen.',
                 ],
             ],
             'String with a lot of multibyte characters should not break when wrappingColumn is at its mb_strlen' => [
-                'value' => 'kategóriáját kötelező',
+                'value'          => 'kategóriáját kötelező',
                 'wrappingColumn' => 21,
-                'assert' => [
+                'assert'         => [
                     'kategóriáját kötelező',
                 ],
             ],
         ];
+        // phpcs:enable
     }
 
     /**
@@ -189,17 +194,15 @@ class WriteTest extends AbstractFixtureTestCase
     #[DataProvider('wrappingDataProvider')]
     public function testWrapping(string $value, int $wrappingColumn, array $assert): void
     {
-
         // Make sure that encoding is set to UTF-8 for this test
-        $mbEncoding = \mb_internal_encoding();
-        \mb_internal_encoding('UTF-8');
+        $mbEncoding = mb_internal_encoding();
+        mb_internal_encoding('UTF-8');
 
-        $class = new ReflectionClass('\Sepia\PoParser\PoCompiler');
+        $class = new ReflectionClass(PoCompiler::class);
         try {
             // Use Reflection and make private method accessible...
-            $method = $class->getMethod('wrapString');
+            $method   = $class->getMethod('wrapString');
             $compiler = new PoCompiler($wrappingColumn);
-
         } catch (ReflectionException) {
             $this->fail('Method wrapString not found in PoCompiler');
         }
@@ -207,7 +210,6 @@ class WriteTest extends AbstractFixtureTestCase
         // Test the private method
         $res = $method->invokeArgs($compiler, [$value]);
         $this->assertEquals($assert, $res);
-
 
         // Create a po-file with all the test-values as msgid and a fake translation as msgstr
         // And test if the entry could be fetched and the translation equals the msgstr.
@@ -217,7 +219,7 @@ class WriteTest extends AbstractFixtureTestCase
         $translation = 'Test string';
 
         $entry = EntryFactory::createFromArray([
-            'msgid' => $value,
+            'msgid'  => $value,
             'msgstr' => $translation,
         ]);
 
@@ -229,35 +231,32 @@ class WriteTest extends AbstractFixtureTestCase
         }
 
         $catalog = $this->parseFile('temp.po');
-        $entry = $catalog->getEntry($value);
+        $entry   = $catalog->getEntry($value);
 
         $this->assertNotNull($entry);
         $this->assertEquals($translation, $entry->getMsgStr());
 
-
         // Revert encoding to previous setting
-        \mb_internal_encoding($mbEncoding);
+        mb_internal_encoding($mbEncoding);
     }
-
 
     public function testWriteObsoletePlural(): void
     {
-
         $catalogSource = new CatalogArray();
 
         // Obsolete entry
         $entry = EntryFactory::createFromArray([
-            'msgid' => '%d obsolete string',
+            'msgid'        => '%d obsolete string',
             'msgid_plural' => '%d obsolete strings',
-            'msgstr' => 'translation.2',
-            'msgstr[0]' => 'translation.plural.0',
-            'msgstr[1]' => 'translation.plural.1',
-            'msgstr[2]' => 'translation.plural.2',
-            'reference' => ['src/views/forms.php:45'],
-            'tcomment' => ['translator comment'],
-            'ccomment' => ['code comment'],
-            'flags' => ['fuzzy'],
-            'obsolete' => 'obsolete',
+            'msgstr'       => 'translation.2',
+            'msgstr[0]'    => 'translation.plural.0',
+            'msgstr[1]'    => 'translation.plural.1',
+            'msgstr[2]'    => 'translation.plural.2',
+            'reference'    => ['src/views/forms.php:45'],
+            'tcomment'     => ['translator comment'],
+            'ccomment'     => ['code comment'],
+            'flags'        => ['fuzzy'],
+            'obsolete'     => 'obsolete',
         ]);
 
         $catalogSource->addEntry($entry);
@@ -268,20 +267,19 @@ class WriteTest extends AbstractFixtureTestCase
             $this->fail('Cannot save catalog');
         }
 
-        $written_contents = \file_get_contents($this->resourcesPath.'temp.po');
+        $writtenContents = file_get_contents($this->resourcesPath . 'temp.po');
 
         $eol = "\n";
 
-        $expected_contents = '' .
-            '#, fuzzy' . $eol .
-            '#~ msgid "%d obsolete string"' . $eol .
-            '#~ msgid_plural "%d obsolete strings"' . $eol .
-            '#~ msgstr[0] "translation.plural.0"' . $eol .
-            '#~ msgstr[1] "translation.plural.1"' . $eol .
-            '#~ msgstr[2] "translation.plural.2"' . $eol;
+        $expectedContents = ''
+            . '#, fuzzy' . $eol
+            . '#~ msgid "%d obsolete string"' . $eol
+            . '#~ msgid_plural "%d obsolete strings"' . $eol
+            . '#~ msgstr[0] "translation.plural.0"' . $eol
+            . '#~ msgstr[1] "translation.plural.1"' . $eol
+            . '#~ msgstr[2] "translation.plural.2"' . $eol;
 
-        $this->assertEquals($expected_contents, $written_contents);
-
+        $this->assertEquals($expectedContents, $writtenContents);
     }
 
     /**
@@ -289,8 +287,8 @@ class WriteTest extends AbstractFixtureTestCase
      */
     protected function saveCatalog(Catalog $catalog, int $wrappingColumn = 80): void
     {
-        $fileHandler = new FileSystem($this->resourcesPath.'temp.po');
-        $compiler = new PoCompiler($wrappingColumn);
+        $fileHandler = new FileSystem($this->resourcesPath . 'temp.po');
+        $compiler    = new PoCompiler($wrappingColumn);
         $fileHandler->save($compiler->compile($catalog));
     }
 
@@ -299,7 +297,10 @@ class WriteTest extends AbstractFixtureTestCase
         foreach ($catalogSource->getEntries() as $entry) {
             $entryWritten = $catalogNew->getEntry($entry->getMsgId(), $entry->getMsgCtxt());
 
-            $this->assertNotNull($entryWritten, 'Entry not found:'.$entry->getMsgId().','.$entry->getMsgCtxt());
+            $this->assertNotNull(
+                $entryWritten,
+                'Entry not found:' . $entry->getMsgId() . ',' . $entry->getMsgCtxt()
+            );
 
             $this->assertEquals($entry->getMsgStr(), $entryWritten->getMsgStr());
             $this->assertEquals($entry->getMsgCtxt(), $entryWritten->getMsgCtxt());
@@ -321,9 +322,5 @@ class WriteTest extends AbstractFixtureTestCase
     protected function tearDown(): void
     {
         parent::tearDown();
-
-        //if (file_exists($this->resourcesPath.'temp.po')) {
-        //    unlink($this->resourcesPath.'temp.po');
-        //}
     }
 }

@@ -4,6 +4,17 @@ declare(strict_types=1);
 
 namespace Sepia\PoParser\SourceHandler;
 
+use Exception;
+
+use function fclose;
+use function feof;
+use function fgets;
+use function file_exists;
+use function file_put_contents;
+use function fopen;
+use function htmlspecialchars;
+use function is_readable;
+
 /**
  *    Copyright (c) 2012 Raúl Ferràs raul.ferras@gmail.com
  *    All rights reserved.
@@ -43,12 +54,12 @@ class FileSystem implements SourceHandler
 
     public function __construct(string $filePath)
     {
-        $this->filePath = $filePath;
+        $this->filePath   = $filePath;
         $this->fileHandle = null;
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     protected function openFile(): void
     {
@@ -56,38 +67,38 @@ class FileSystem implements SourceHandler
             return;
         }
 
-        if (\file_exists($this->filePath) === false) {
-            throw new \Exception('Parser: Input File does not exists: "' . \htmlspecialchars($this->filePath) . '"');
+        if (file_exists($this->filePath) === false) {
+            throw new Exception('Parser: Input File does not exists: "' . htmlspecialchars($this->filePath) . '"');
         }
 
-        if (\is_readable($this->filePath) === false) {
-            throw new \Exception('Parser: File is not readable: "' . \htmlspecialchars($this->filePath) . '"');
+        if (is_readable($this->filePath) === false) {
+            throw new Exception('Parser: File is not readable: "' . htmlspecialchars($this->filePath) . '"');
         }
 
-        $this->fileHandle = @\fopen($this->filePath, 'rb');
-        if ($this->fileHandle===false) {
-            throw new \Exception('Parser: Could not open file: "' . \htmlspecialchars($this->filePath) . '"');
+        $this->fileHandle = @fopen($this->filePath, 'rb');
+        if ($this->fileHandle === false) {
+            throw new Exception('Parser: Could not open file: "' . htmlspecialchars($this->filePath) . '"');
         }
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function getNextLine(): false|string
     {
         $this->openFile();
 
-        return \fgets($this->fileHandle);
+        return fgets($this->fileHandle);
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function ended(): bool
     {
         $this->openFile();
 
-        return \feof($this->fileHandle);
+        return feof($this->fileHandle);
     }
 
     public function close(): bool
@@ -96,17 +107,17 @@ class FileSystem implements SourceHandler
             return true;
         }
 
-        return @\fclose($this->fileHandle);
+        return @fclose($this->fileHandle);
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function save(string $poString): true
     {
-        $result = \file_put_contents($this->filePath, $poString);
+        $result = file_put_contents($this->filePath, $poString);
         if ($result === false) {
-            throw new \Exception('Could not write into file '.\htmlspecialchars($this->filePath));
+            throw new Exception('Could not write into file ' . htmlspecialchars($this->filePath));
         }
 
         return true;

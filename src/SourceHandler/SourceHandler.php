@@ -34,10 +34,14 @@ namespace Sepia\PoParser\SourceHandler;
  *
  * https://github.com/raulferras/PHP-po-parser
  */
+// phpcs:ignore WebimpressCodingStandard.NamingConventions.Interface.Suffix
 interface SourceHandler
 {
     public function getNextLine(): false|string;
+
     public function ended(): bool;
+
     public function close(): bool;
+
     public function save(string $poString): true;
 }

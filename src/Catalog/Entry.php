@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Sepia\PoParser\Catalog;
 
+use function count;
+use function in_array;
+
 class Entry
 {
     protected string $msgId;
@@ -35,17 +38,17 @@ class Entry
 
     public function __construct(string $msgId, ?string $msgStr = null)
     {
-        $this->msgId = $msgId;
-        $this->msgStr = $msgStr;
-        $this->msgIdPlural = null;
-        $this->msgStrPlurals = [];
-        $this->msgCtxt = null;
-        $this->previousEntry = null;
-        $this->obsolete = null;
-        $this->flags = [];
+        $this->msgId              = $msgId;
+        $this->msgStr             = $msgStr;
+        $this->msgIdPlural        = null;
+        $this->msgStrPlurals      = [];
+        $this->msgCtxt            = null;
+        $this->previousEntry      = null;
+        $this->obsolete           = null;
+        $this->flags              = [];
         $this->translatorComments = [];
-        $this->developerComments = [];
-        $this->reference = [];
+        $this->developerComments  = [];
+        $this->reference          = [];
     }
 
     public function setMsgId(string $msgId): self
@@ -172,12 +175,12 @@ class Entry
 
     public function isFuzzy(): bool
     {
-        return \in_array('fuzzy', $this->getFlags(), true);
+        return in_array('fuzzy', $this->getFlags(), true);
     }
 
     public function isPlural(): bool
     {
-        return $this->getMsgIdPlural() !== null || \count($this->getMsgStrPlurals()) > 0;
+        return $this->getMsgIdPlural() !== null || count($this->getMsgStrPlurals()) > 0;
     }
 
     /**
